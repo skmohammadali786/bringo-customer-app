@@ -14,25 +14,39 @@ type ThemeContextType = {
   preference: ThemePreference;
   resolved: "light" | "dark";
   setPreference: (pref: ThemePreference) => Promise<void>;
+  accentColor: string;
+  setAccentColor: (color: string) => Promise<void>;
 };
+
+const DEFAULT_ACCENT = "#FF9A3D";
 
 const ThemeContext = createContext<ThemeContextType>({
   preference: "light",
   resolved: "light",
   setPreference: async () => {},
+  accentColor: DEFAULT_ACCENT,
+  setAccentColor: async () => {},
 });
 
 const STORAGE_KEY = "@bringo_theme";
+const ACCENT_KEY = "@bringo_accent";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemScheme = useColorScheme();
   const [preference, setPreferenceState] = useState<ThemePreference>("light");
+  const [accentColor, setAccentState] = useState<string>(DEFAULT_ACCENT);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((val) => {
-      if (val === "light" || val === "dark" || val === "system") {
-        setPreferenceState(val);
+    Promise.all([
+      AsyncStorage.getItem(STORAGE_KEY),
+      AsyncStorage.getItem(ACCENT_KEY),
+    ]).then(([themeVal, accentVal]) => {
+      if (themeVal === "light" || themeVal === "dark" || themeVal === "system") {
+        setPreferenceState(themeVal);
+      }
+      if (accentVal) {
+        setAccentState(accentVal);
       }
       setLoaded(true);
     });
@@ -50,10 +64,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem(STORAGE_KEY, pref);
   }, []);
 
-  if (!loaded) return null;
+  const setAccentColor = useCallback(async (color: string) => {
+    setAccentState(color);
+    await AsyncStorage.setItem(ACCENT_KEY, color);
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ preference, resolved, setPreference }}>
+    <ThemeContext.Provider value={{ preference, resolved, setPreference, accentColor, setAccentColor }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -14,6 +14,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { AddressProvider } from "@/context/AddressContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -116,11 +117,13 @@ function AppProviders({ children }: { children: React.ReactNode }) {
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <CartProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <KeyboardProvider>{children}</KeyboardProvider>
-              </GestureHandlerRootView>
-            </CartProvider>
+            <AddressProvider>
+              <CartProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <KeyboardProvider>{children}</KeyboardProvider>
+                </GestureHandlerRootView>
+              </CartProvider>
+            </AddressProvider>
           </AuthProvider>
         </QueryClientProvider>
       </ErrorBoundary>

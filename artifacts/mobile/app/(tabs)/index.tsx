@@ -147,8 +147,8 @@ export default function HomeScreen() {
         style={styles.section}
       >
         <SearchBar
-          onVoice={() => router.push("/search" as any)}
-          onImage={() => router.push("/search" as any)}
+          onVoice={() => router.push({ pathname: "/search", params: { mode: "voice" } } as any)}
+          onImage={() => router.push({ pathname: "/search", params: { mode: "image" } } as any)}
         />
       </Animated.View>
 
@@ -224,7 +224,7 @@ export default function HomeScreen() {
         <View style={{ paddingHorizontal: spacing.pagePadding }}>
           <SectionHeader
             title="Trending Now"
-            onSeeAll={() => router.push("/categories" as any)}
+            onSeeAll={() => router.push("/search/results?filter=trending" as any)}
           />
         </View>
         <ScrollView
@@ -249,7 +249,10 @@ export default function HomeScreen() {
         style={[styles.section, { paddingHorizontal: 0 }]}
       >
         <View style={{ paddingHorizontal: spacing.pagePadding }}>
-          <SectionHeader title="Offers for you" />
+          <SectionHeader
+            title="Offers for you"
+            onSeeAll={() => router.push("/offers" as any)}
+          />
         </View>
         <ScrollView
           horizontal
@@ -259,11 +262,12 @@ export default function HomeScreen() {
           {OFFERS.map((offer) => (
             <Pressable
               key={offer.id}
-              style={[
+              style={({ pressed }) => [
                 styles.offerCard,
-                { backgroundColor: offer.color },
+                { backgroundColor: offer.color, opacity: pressed ? 0.9 : 1 },
                 shadows.md,
               ]}
+              onPress={() => router.push(`/promo?code=${offer.code}` as any)}
             >
               <Badge label={offer.discount} variant="default" style={styles.offerBadge} />
               <Text style={styles.offerTitle}>{offer.title}</Text>
@@ -274,6 +278,9 @@ export default function HomeScreen() {
                 </View>
               </View>
               <Text style={styles.expires}>Expires {offer.expiresAt}</Text>
+              <View style={styles.offerArrow}>
+                <Feather name="arrow-right" size={14} color="rgba(255,255,255,0.8)" />
+              </View>
             </Pressable>
           ))}
         </ScrollView>
@@ -395,6 +402,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     gap: 6,
+    position: "relative",
   },
   offerBadge: { backgroundColor: "rgba(255,255,255,0.25)", marginBottom: 4 },
   offerTitle: { fontFamily: "Inter_700Bold", fontSize: 20, color: "#FFF", letterSpacing: -0.5 },
@@ -412,6 +420,17 @@ const styles = StyleSheet.create({
   },
   codeText: { fontFamily: "Inter_700Bold", fontSize: 13, color: "#FFF", letterSpacing: 1.5 },
   expires: { fontFamily: "Inter_400Regular", fontSize: 11, color: "rgba(255,255,255,0.6)" },
+  offerArrow: {
+    position: "absolute",
+    bottom: 16,
+    right: 16,
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   requestBanner: {
     flexDirection: "row",
     alignItems: "center",

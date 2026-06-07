@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,16 +24,49 @@ const PAYMENT_METHODS = [
   { id: "cod", label: "Cash on Delivery", subtitle: "Pay when delivered", icon: "dollar-sign" as const, color: "#8B4513" },
 ];
 
+const VALID_CODES: Record<string, { discount: number; label: string }> = {
+  "BRINGO10": { discount: 10, label: "10% off" },
+  "FIRST50": { discount: 50, label: "₹50 off" },
+  "SAVE20": { discount: 20, label: "20% off" },
+};
+
 export default function CheckoutScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { items, total, itemCount, clearCart } = useCart();
   const [selectedPayment, setSelectedPayment] = useState("wallet");
   const [placing, setPlacing] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; discount: number; label: string } | null>(null);
+  const [promoError, setPromoError] = useState("");
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 16;
 
   const deliveryFee = total > 199 ? 0 : 29;
-  const grandTotal = total + deliveryFee;
+
+  const discountAmount = appliedPromo
+    ? VALID_CODES[appliedPromo.code]?.discount > 20
+      ? VALID_CODES[appliedPromo.code].discount
+      : Math.round((total * VALID_CODES[appliedPromo.code].discount) / 100)
+    : 0;
+
+  const grandTotal = Math.max(total + deliveryFee - discountAmount, 0);
+
+  const handleApplyPromo = () => {
+    const code = promoCode.trim().toUpperCase();
+    if (VALID_CODES[code]) {
+      setAppliedPromo({ code, ...VALID_CODES[code] });
+      setPromoError("");
+    } else {
+      setPromoError("Invalid promo code. Try BRINGO10 or FIRST50.");
+      setAppliedPromo(null);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode("");
+    setPromoError("");
+  };
 
   const handlePlaceOrder = async () => {
     setPlacing(true);
@@ -88,6 +122,70 @@ export default function CheckoutScreen() {
           </View>
         </Pressable>
 
+        {/* Promo / Offer Code */}
+        <View style={[styles.sectionCard, { backgroundColor: colors.card }, shadows.sm]}>
+          <View style={styles.sectionHead}>
+            <Text style={[styles.sectionTitle, { color: colors.primary }]}>Promo code</Text>
+            {appliedPromo && (
+              <View style={[styles.appliedBadge, { backgroundColor: colors.accentGreen + "18" }]}>
+                <Feather name="tag" size={12} color={colors.accentGreen} />
+                <Text style={[styles.appliedText, { color: colors.accentGreen }]}>
+                  {appliedPromo.label} applied
+                </Text>
+              </View>
+            )}
+          </View>
+          {appliedPromo ? (
+            <View style={styles.appliedRow}>
+              <View style={[styles.appliedCodeBox, { backgroundColor: colors.accentGreen + "15", borderColor: colors.accentGreen }]}>
+                <Feather name="check-circle" size={16} color={colors.accentGreen} />
+                <Text style={[styles.appliedCode, { color: colors.accentGreen }]}>{appliedPromo.code}</Text>
+              </View>
+              <Pressable onPress={handleRemovePromo} style={styles.removeBtn}>
+                <Feather name="x" size={18} color={colors.mutedForeground} />
+              </Pressable>
+            </View>
+          ) : (
+            <View>
+              <View style={styles.promoInputRow}>
+                <TextInput
+                  value={promoCode}
+                  onChangeText={(t) => {
+                    setPromoCode(t);
+                    setPromoError("");
+                  }}
+                  placeholder="Enter promo code"
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize="characters"
+                  style={[
+                    styles.promoInput,
+                    {
+                      backgroundColor: colors.muted,
+                      color: colors.primary,
+                      borderColor: promoError ? colors.danger : colors.border,
+                    },
+                  ]}
+                />
+                <Pressable
+                  onPress={handleApplyPromo}
+                  disabled={!promoCode.trim()}
+                  style={[
+                    styles.applyBtn,
+                    { backgroundColor: promoCode.trim() ? colors.primary : colors.muted },
+                  ]}
+                >
+                  <Text style={[styles.applyText, { color: promoCode.trim() ? colors.primaryForeground : colors.mutedForeground }]}>
+                    Apply
+                  </Text>
+                </Pressable>
+              </View>
+              {promoError ? (
+                <Text style={[styles.promoError, { color: colors.danger }]}>{promoError}</Text>
+              ) : null}
+            </View>
+          )}
+        </View>
+
         {/* Order Summary */}
         <View style={[styles.sectionCard, { backgroundColor: colors.card }, shadows.sm]}>
           <Text style={[styles.sectionTitle, { color: colors.primary }]}>Order summary</Text>
@@ -108,6 +206,7 @@ export default function CheckoutScreen() {
           {[
             { label: "Item total", value: `₹${total}` },
             { label: "Delivery", value: deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`, green: deliveryFee === 0 },
+            ...(appliedPromo ? [{ label: `Discount (${appliedPromo.code})`, value: `-₹${discountAmount}`, green: true }] : []),
             { label: "Taxes", value: "₹0" },
           ].map((row) => (
             <View key={row.label} style={styles.billRow}>
@@ -195,6 +294,48 @@ const styles = StyleSheet.create({
   timeIcon: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   timeLabel: { fontFamily: "Inter_600SemiBold", fontSize: 14 },
   timeSub: { fontFamily: "Inter_400Regular", fontSize: 12 },
+  promoInputRow: { flexDirection: "row", gap: 10 },
+  promoInput: {
+    flex: 1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontFamily: "Inter_500Medium",
+    fontSize: 14,
+    borderWidth: 1,
+    letterSpacing: 1,
+  },
+  applyBtn: {
+    borderRadius: 12,
+    paddingHorizontal: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  applyText: { fontFamily: "Inter_600SemiBold", fontSize: 14 },
+  promoError: { fontFamily: "Inter_400Regular", fontSize: 12, marginTop: 4 },
+  appliedBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  appliedText: { fontFamily: "Inter_600SemiBold", fontSize: 12 },
+  appliedRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  appliedCodeBox: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderStyle: "dashed",
+  },
+  appliedCode: { fontFamily: "Inter_700Bold", fontSize: 14, letterSpacing: 1 },
+  removeBtn: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
   orderItem: { flexDirection: "row", alignItems: "center", gap: 8 },
   orderItemQty: { fontFamily: "Inter_500Medium", fontSize: 14, minWidth: 20 },
   orderItemName: { flex: 1, fontFamily: "Inter_400Regular", fontSize: 14 },

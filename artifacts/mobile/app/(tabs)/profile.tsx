@@ -3,8 +3,8 @@ import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
-  Alert,
   Image,
+  Modal,
   Platform,
   Pressable,
   ScrollView,
@@ -33,33 +33,26 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout, updateUser } = useAuth();
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [signOutVisible, setSignOutVisible] = useState(false);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + spacing.tabBarHeight;
 
   const handleSignOut = () => {
-    Alert.alert("Sign out", "Are you sure you want to sign out?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Sign out",
-        style: "destructive",
-        onPress: async () => {
-          await logout();
-          router.replace("/(auth)/welcome" as any);
-        },
-      },
-    ]);
+    setSignOutVisible(true);
+  };
+
+  const confirmSignOut = async () => {
+    setSignOutVisible(false);
+    await logout();
+    router.replace("/(auth)/welcome" as any);
   };
 
   const handlePhotoUpload = async () => {
     if (Platform.OS === "web") {
-      Alert.alert("Photo upload", "Photo upload works on mobile devices.");
       return;
     }
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Permission needed", "Please allow access to your photo library.");
-      return;
-    }
+    if (status !== "granted") return;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -86,6 +79,17 @@ export default function ProfileScreen() {
           subtitle: "All on",
           route: "/notifications/settings",
         },
+      ],
+    },
+    {
+      title: "Shopping",
+      items: [
+        {
+          icon: "heart",
+          label: "Saved / Wishlist",
+          route: "/wishlist",
+        },
+        { icon: "clock", label: "Order History", route: "/(tabs)/orders" },
       ],
     },
     {
@@ -123,16 +127,8 @@ export default function ProfileScreen() {
       items: [
         { icon: "help-circle", label: "Help Center", route: "/profile/help" },
         { icon: "message-circle", label: "Chat with Support", route: "/chat/support" },
-        {
-          icon: "file-text",
-          label: "Terms of Service",
-          route: "/profile/terms",
-        },
-        {
-          icon: "shield",
-          label: "Privacy & Data",
-          route: "/profile/privacy",
-        },
+        { icon: "file-text", label: "Terms of Service", route: "/profile/terms" },
+        { icon: "shield", label: "Privacy & Data", route: "/profile/privacy" },
       ],
     },
     {
@@ -151,158 +147,198 @@ export default function ProfileScreen() {
   const displayAvatar = avatar || user?.avatar;
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={{ paddingBottom: botPad }}
-      showsVerticalScrollIndicator={false}
-    >
-      <Animated.View
-        entering={FadeInDown.duration(400).delay(0)}
-        style={[styles.header, { paddingTop: topPad + 16 }]}
+    <>
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}
+        contentContainerStyle={{ paddingBottom: botPad }}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.title, { color: colors.primary }]}>Profile</Text>
-        <Pressable
-          style={[styles.settingsBtn, { backgroundColor: colors.card }, shadows.sm]}
-          onPress={() => router.push("/profile/settings" as any)}
-        >
-          <Feather name="settings" size={18} color={colors.primary} />
-        </Pressable>
-      </Animated.View>
-
-      {/* Profile Card */}
-      <Animated.View entering={FadeInDown.duration(400).delay(80)} style={styles.profileWrap}>
-        <View style={[styles.profileCard, { backgroundColor: colors.card }, shadows.card]}>
-          <Pressable onPress={handlePhotoUpload} style={styles.avatarWrap}>
-            {displayAvatar ? (
-              <Image source={{ uri: displayAvatar }} style={styles.avatarImage} />
-            ) : (
-              <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-                <Text style={[styles.avatarLetter, { color: colors.primaryForeground }]}>
-                  {user?.name?.charAt(0).toUpperCase() ?? "A"}
-                </Text>
-              </View>
-            )}
-            <View style={[styles.cameraBadge, { backgroundColor: colors.accentOrange }]}>
-              <Feather name="camera" size={11} color="#FFF" />
-            </View>
-          </Pressable>
-          <View style={styles.profileInfo}>
-            <Text style={[styles.profileName, { color: colors.primary }]}>
-              {user?.name ?? "User"}
-            </Text>
-            <Text style={[styles.profilePhone, { color: colors.secondary }]}>
-              +91 {user?.phone ?? ""}
-            </Text>
-          </View>
-          <View style={[styles.walletMini, { backgroundColor: colors.muted }]}>
-            <Feather name="credit-card" size={14} color={colors.accentOrange} />
-            <Text style={[styles.walletAmt, { color: colors.primary }]}>
-              ₹{user?.walletBalance?.toLocaleString("en-IN")}
-            </Text>
-          </View>
-        </View>
-      </Animated.View>
-
-      {/* Stats */}
-      <Animated.View
-        entering={FadeInDown.duration(400).delay(140)}
-        style={[styles.statsRow, { paddingHorizontal: spacing.pagePadding }]}
-      >
-        {[
-          { label: "Orders", value: "12" },
-          { label: "Points", value: "450" },
-          { label: "Referrals", value: "3" },
-        ].map((s, i) => (
-          <View
-            key={s.label}
-            style={[
-              styles.statItem,
-              { backgroundColor: colors.card },
-              shadows.sm,
-              i === 1 && { backgroundColor: colors.primary },
-            ]}
-          >
-            <Text
-              style={[
-                styles.statVal,
-                { color: i === 1 ? colors.primaryForeground : colors.primary },
-              ]}
-            >
-              {s.value}
-            </Text>
-            <Text
-              style={[
-                styles.statLbl,
-                { color: i === 1 ? "rgba(247,245,240,0.6)" : colors.mutedForeground },
-              ]}
-            >
-              {s.label}
-            </Text>
-          </View>
-        ))}
-      </Animated.View>
-
-      {/* Menu */}
-      {MENU_SECTIONS.map((section, sIdx) => (
         <Animated.View
-          key={section.title || "danger"}
-          entering={FadeInDown.duration(400).delay(200 + sIdx * 60)}
-          style={styles.menuSection}
+          entering={FadeInDown.duration(400).delay(0)}
+          style={[styles.header, { paddingTop: topPad + 16 }]}
         >
-          {section.title ? (
-            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
-              {section.title}
-            </Text>
-          ) : null}
-          <View style={[styles.menuCard, { backgroundColor: colors.card }, shadows.sm]}>
-            {section.items.map((item, idx) => (
-              <View key={item.label}>
-                {idx > 0 && (
-                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
-                )}
-                <Pressable
-                  onPress={() => {
-                    if (item.action) item.action();
-                    else if (item.route) router.push(item.route as any);
-                  }}
-                  style={({ pressed }) => [styles.menuItem, pressed && { opacity: 0.7 }]}
-                >
-                  <View
-                    style={[
-                      styles.menuIcon,
-                      { backgroundColor: item.color ? `${item.color}15` : colors.muted },
-                    ]}
-                  >
-                    <Feather
-                      name={item.icon}
-                      size={17}
-                      color={item.color ?? colors.secondary}
-                    />
-                  </View>
-                  <View style={styles.menuText}>
-                    <Text
-                      style={[styles.menuLabel, { color: item.color ?? colors.primary }]}
-                    >
-                      {item.label}
-                    </Text>
-                    {item.subtitle && (
-                      <Text style={[styles.menuSub, { color: colors.mutedForeground }]}>
-                        {item.subtitle}
-                      </Text>
-                    )}
-                  </View>
-                  {!item.action && (
-                    <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
-                  )}
-                </Pressable>
+          <Text style={[styles.title, { color: colors.primary }]}>Profile</Text>
+          <Pressable
+            style={[styles.settingsBtn, { backgroundColor: colors.card }, shadows.sm]}
+            onPress={() => router.push("/profile/settings" as any)}
+          >
+            <Feather name="settings" size={18} color={colors.primary} />
+          </Pressable>
+        </Animated.View>
+
+        {/* Profile Card */}
+        <Animated.View entering={FadeInDown.duration(400).delay(80)} style={styles.profileWrap}>
+          <View style={[styles.profileCard, { backgroundColor: colors.card }, shadows.card]}>
+            <Pressable onPress={handlePhotoUpload} style={styles.avatarWrap}>
+              {displayAvatar ? (
+                <Image source={{ uri: displayAvatar }} style={styles.avatarImage} />
+              ) : (
+                <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+                  <Text style={[styles.avatarLetter, { color: colors.primaryForeground }]}>
+                    {user?.name?.charAt(0).toUpperCase() ?? "A"}
+                  </Text>
+                </View>
+              )}
+              <View style={[styles.cameraBadge, { backgroundColor: colors.accentOrange }]}>
+                <Feather name="camera" size={11} color="#FFF" />
               </View>
-            ))}
+            </Pressable>
+            <View style={styles.profileInfo}>
+              <Text style={[styles.profileName, { color: colors.primary }]}>
+                {user?.name ?? "User"}
+              </Text>
+              <Text style={[styles.profilePhone, { color: colors.secondary }]}>
+                +91 {user?.phone ?? ""}
+              </Text>
+            </View>
+            <View style={[styles.walletMini, { backgroundColor: colors.muted }]}>
+              <Feather name="credit-card" size={14} color={colors.accentOrange} />
+              <Text style={[styles.walletAmt, { color: colors.primary }]}>
+                ₹{user?.walletBalance?.toLocaleString("en-IN")}
+              </Text>
+            </View>
           </View>
         </Animated.View>
-      ))}
 
-      <Text style={[styles.version, { color: colors.mutedForeground }]}>Bringo v1.0.0</Text>
-    </ScrollView>
+        {/* Stats */}
+        <Animated.View
+          entering={FadeInDown.duration(400).delay(140)}
+          style={[styles.statsRow, { paddingHorizontal: spacing.pagePadding }]}
+        >
+          {[
+            { label: "Orders", value: "12" },
+            { label: "Points", value: "450" },
+            { label: "Referrals", value: "3" },
+          ].map((s, i) => (
+            <View
+              key={s.label}
+              style={[
+                styles.statItem,
+                { backgroundColor: colors.card },
+                shadows.sm,
+                i === 1 && { backgroundColor: colors.primary },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statVal,
+                  { color: i === 1 ? colors.primaryForeground : colors.primary },
+                ]}
+              >
+                {s.value}
+              </Text>
+              <Text
+                style={[
+                  styles.statLbl,
+                  { color: i === 1 ? "rgba(247,245,240,0.6)" : colors.mutedForeground },
+                ]}
+              >
+                {s.label}
+              </Text>
+            </View>
+          ))}
+        </Animated.View>
+
+        {/* Menu */}
+        {MENU_SECTIONS.map((section, sIdx) => (
+          <Animated.View
+            key={section.title || "danger"}
+            entering={FadeInDown.duration(400).delay(200 + sIdx * 60)}
+            style={styles.menuSection}
+          >
+            {section.title ? (
+              <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>
+                {section.title}
+              </Text>
+            ) : null}
+            <View style={[styles.menuCard, { backgroundColor: colors.card }, shadows.sm]}>
+              {section.items.map((item, idx) => (
+                <View key={item.label}>
+                  {idx > 0 && (
+                    <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  )}
+                  <Pressable
+                    onPress={() => {
+                      if (item.action) item.action();
+                      else if (item.route) router.push(item.route as any);
+                    }}
+                    style={({ pressed }) => [styles.menuItem, pressed && { opacity: 0.7 }]}
+                  >
+                    <View
+                      style={[
+                        styles.menuIcon,
+                        { backgroundColor: item.color ? `${item.color}15` : colors.muted },
+                      ]}
+                    >
+                      <Feather
+                        name={item.icon}
+                        size={17}
+                        color={item.color ?? colors.secondary}
+                      />
+                    </View>
+                    <View style={styles.menuText}>
+                      <Text
+                        style={[styles.menuLabel, { color: item.color ?? colors.primary }]}
+                      >
+                        {item.label}
+                      </Text>
+                      {item.subtitle && (
+                        <Text style={[styles.menuSub, { color: colors.mutedForeground }]}>
+                          {item.subtitle}
+                        </Text>
+                      )}
+                    </View>
+                    {!item.action && (
+                      <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+                    )}
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </Animated.View>
+        ))}
+
+        <Text style={[styles.version, { color: colors.mutedForeground }]}>Bringo v1.0.0</Text>
+      </ScrollView>
+
+      {/* Custom Sign Out Modal */}
+      <Modal
+        visible={signOutVisible}
+        transparent
+        animationType="fade"
+        statusBarTranslucent
+        onRequestClose={() => setSignOutVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <Animated.View
+            entering={FadeInDown.duration(300)}
+            style={[styles.modalCard, { backgroundColor: colors.card }]}
+          >
+            <View style={[styles.modalIcon, { backgroundColor: colors.danger + "15" }]}>
+              <Feather name="log-out" size={28} color={colors.danger} />
+            </View>
+            <Text style={[styles.modalTitle, { color: colors.primary }]}>Sign out?</Text>
+            <Text style={[styles.modalSub, { color: colors.secondary }]}>
+              You'll need to sign back in to access your account.
+            </Text>
+            <View style={styles.modalBtns}>
+              <Pressable
+                style={[styles.modalBtn, { backgroundColor: colors.muted }]}
+                onPress={() => setSignOutVisible(false)}
+              >
+                <Text style={[styles.modalBtnText, { color: colors.primary }]}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.modalBtn, { backgroundColor: colors.danger }]}
+                onPress={confirmSignOut}
+              >
+                <Text style={[styles.modalBtnText, { color: "#FFF" }]}>Sign out</Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -401,4 +437,42 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginVertical: 20,
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    paddingBottom: 40,
+    paddingHorizontal: spacing.pagePadding,
+  },
+  modalCard: {
+    width: "100%",
+    borderRadius: 28,
+    padding: 28,
+    alignItems: "center",
+    gap: 12,
+  },
+  modalIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  modalTitle: { fontFamily: "Inter_700Bold", fontSize: 22, letterSpacing: -0.5 },
+  modalSub: {
+    fontFamily: "Inter_400Regular",
+    fontSize: 14,
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  modalBtns: { flexDirection: "row", gap: 12, marginTop: 8, width: "100%" },
+  modalBtn: {
+    flex: 1,
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: "center",
+  },
+  modalBtnText: { fontFamily: "Inter_600SemiBold", fontSize: 16 },
 });

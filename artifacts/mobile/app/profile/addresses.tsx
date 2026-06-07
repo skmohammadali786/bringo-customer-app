@@ -1,7 +1,8 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
+  Alert,
   Platform,
   Pressable,
   ScrollView,
@@ -11,38 +12,23 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { formatAddress, useAddresses } from "@/context/AddressContext";
 import { useColors } from "@/hooks/useColors";
 import { shadows, spacing } from "@/constants/spacing";
 import { typography } from "@/constants/typography";
 
-const SAVED_ADDRESSES = [
-  {
-    id: "1",
-    label: "Home",
-    address: "Flat 4B, Sunrise Apartments, Koramangala, Bengaluru - 560034",
-    isDefault: true,
-    icon: "home" as const,
-  },
-  {
-    id: "2",
-    label: "Work",
-    address: "WeWork Galaxy, 43 Residency Road, MG Road, Bengaluru - 560025",
-    isDefault: false,
-    icon: "briefcase" as const,
-  },
-];
-
 export default function AddressesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const [addresses, setAddresses] = useState(SAVED_ADDRESSES);
+  const { addresses, removeAddress, setDefault } = useAddresses();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 24;
 
-  const setDefault = (id: string) => {
-    setAddresses((prev) =>
-      prev.map((a) => ({ ...a, isDefault: a.id === id }))
-    );
+  const handleDelete = (id: string) => {
+    Alert.alert("Remove address", "Delete this saved address?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => removeAddress(id) },
+    ]);
   };
 
   return (
@@ -71,18 +57,20 @@ export default function AddressesScreen() {
               <View
                 style={[
                   styles.addrIcon,
-                  { backgroundColor: addr.isDefault ? colors.primary + "15" : colors.muted },
+                  { backgroundColor: addr.isDefault ? colors.accentOrange + "18" : colors.muted },
                 ]}
               >
                 <Feather
                   name={addr.icon}
                   size={20}
-                  color={addr.isDefault ? colors.primary : colors.secondary}
+                  color={addr.isDefault ? colors.accentOrange : colors.secondary}
                 />
               </View>
               <View style={styles.addrInfo}>
                 <View style={styles.labelRow}>
-                  <Text style={[styles.addrLabel, { color: colors.primary }]}>{addr.label}</Text>
+                  <Text style={[styles.addrLabel, { color: colors.primary }]}>
+                    {addr.label.charAt(0).toUpperCase() + addr.label.slice(1)}
+                  </Text>
                   {addr.isDefault && (
                     <View style={[styles.defaultBadge, { backgroundColor: colors.accentGreen + "20" }]}>
                       <Text style={[styles.defaultText, { color: colors.accentGreen }]}>
@@ -91,14 +79,21 @@ export default function AddressesScreen() {
                     </View>
                   )}
                 </View>
-                <Text style={[styles.addrText, { color: colors.secondary }]}>{addr.address}</Text>
-                {!addr.isDefault && (
-                  <Pressable onPress={() => setDefault(addr.id)}>
-                    <Text style={[styles.setDefaultText, { color: colors.accentOrange }]}>
-                      Set as default
-                    </Text>
+                <Text style={[styles.addrText, { color: colors.secondary }]}>
+                  {formatAddress(addr)}
+                </Text>
+                <View style={styles.actions}>
+                  {!addr.isDefault && (
+                    <Pressable onPress={() => setDefault(addr.id)}>
+                      <Text style={[styles.actionText, { color: colors.accentOrange }]}>
+                        Set as default
+                      </Text>
+                    </Pressable>
+                  )}
+                  <Pressable onPress={() => handleDelete(addr.id)}>
+                    <Text style={[styles.actionText, { color: colors.danger }]}>Remove</Text>
                   </Pressable>
-                )}
+                </View>
               </View>
               <Pressable
                 style={styles.editBtn}
@@ -156,7 +151,8 @@ const styles = StyleSheet.create({
   defaultBadge: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2 },
   defaultText: { fontFamily: "Inter_600SemiBold", fontSize: 11 },
   addrText: { ...typography.small, lineHeight: 18 },
-  setDefaultText: { fontFamily: "Inter_500Medium", fontSize: 12, marginTop: 2 },
+  actions: { flexDirection: "row", gap: 14 },
+  actionText: { fontFamily: "Inter_500Medium", fontSize: 12, marginTop: 2 },
   editBtn: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
   addCard: {
     flexDirection: "row",

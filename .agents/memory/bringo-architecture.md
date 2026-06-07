@@ -26,9 +26,15 @@ description: Key decisions for the Bringo Expo mobile app (hyperlocal on-demand 
 
 ## ThemeContext (context/ThemeContext.tsx)
 - Stores preference: "light" | "dark" | "system", persisted to AsyncStorage at `@bringo_theme`
-- **Defaults to "light"** (not system). ThemeProvider returns null until AsyncStorage loads.
-- useColors() reads from useTheme().resolved
-- **Why:** App must default to light regardless of device system setting.
+- Also stores accentColor at `@bringo_accent`, default "#FF9A3D". Both loaded via Promise.all.
+- **Defaults to "light"** (not system). ThemeProvider renders immediately with defaults — do NOT return null while loading (causes splash screen to stay visible).
+- useColors() overlays accentColor onto accentOrange/tint/accent keys.
+- **Why:** App must default to light. Returning null blocks SplashScreen.hideAsync chain.
+
+## AddressContext (context/AddressContext.tsx)
+- Persistent address storage via AsyncStorage at `@bringo_addresses`.
+- Provides: addresses, defaultAddress, addAddress, removeAddress, setDefault, formatAddress.
+- Pre-seeded with 2 mock addresses. Wrap with `<AddressProvider>` inside AuthProvider in _layout.tsx.
 
 ## White Flash Fix
 - Add `contentStyle: { backgroundColor: colors.background }` to Stack screenOptions in _layout.tsx
@@ -47,9 +53,24 @@ description: Key decisions for the Bringo Expo mobile app (hyperlocal on-demand 
 - tel: and mailto: URL patterns work on real devices
 
 ## Share/Copy Invite (invite/index.tsx pattern)
-- Use `Share` from `react-native` for cross-platform sharing
-- Copy button: setState `copied=true` with setTimeout reset — no Clipboard package needed
-- **Why:** expo-clipboard not installed; Share API handles WhatsApp, SMS, email, etc.
+- Use `expo-clipboard` (v8.0.8 for SDK 54) for `Clipboard.setStringAsync(text)`.
+- Use `Share` from `react-native` for cross-platform sharing (WhatsApp, SMS, email).
+- **Why:** expo-clipboard@56 is wrong SDK version — must pin ~8.0.8 for SDK 54.
+
+## Button Variants
+- Valid: "primary" | "secondary" | "ghost" | "danger" | "orange". "outline" does NOT exist.
+
+## Stack Animation Types
+- Valid: "default" | "fade" | "flip" | "none" | "slide_from_bottom" | "slide_from_right" | "slide_from_left" | "simple_push".
+
+## Promo Codes (checkout/index.tsx)
+- BRINGO10 = 10% off, FIRST50 = ₹50 flat off, SAVE20 = 20% off.
+
+## Notifications Tab
+- Hidden from bottom bar using `href: null` in Tabs.Screen options (route kept, tab icon removed).
+
+## Trending See-All
+- Routes to `/search/results?filter=trending` (not a modal, standard push).
 
 ## Request Product Success
 - Route to `/request/success` (NOT `/order/success`) — distinct screens with different accent colors

@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BackHeader } from "@/components/ui/BackHeader";
 import { Button } from "@/components/ui/Button";
+import { useAddresses } from "@/context/AddressContext";
 import { useColors } from "@/hooks/useColors";
 import { shadows, spacing } from "@/constants/spacing";
 
@@ -26,7 +27,8 @@ const ADDRESS_TYPES = [
 export default function AddAddressScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const [addressType, setAddressType] = useState("home");
+  const { addAddress, addresses } = useAddresses();
+  const [addressType, setAddressType] = useState<"home" | "work" | "other">("home");
   const [flat, setFlat] = useState("");
   const [building, setBuilding] = useState("");
   const [area, setArea] = useState("");
@@ -37,10 +39,26 @@ export default function AddAddressScreen() {
 
   const isValid = flat.trim() && area.trim() && city.trim() && pincode.length === 6;
 
+  const iconForType: Record<string, "home" | "briefcase" | "map-pin"> = {
+    home: "home",
+    work: "briefcase",
+    other: "map-pin",
+  };
+
   const handleSave = async () => {
     if (!isValid) return;
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    await addAddress({
+      label: addressType,
+      flat,
+      building,
+      area,
+      city,
+      pincode,
+      isDefault: addresses.length === 0,
+      icon: iconForType[addressType],
+    });
+    setSaving(false);
     router.back();
   };
 
@@ -51,6 +69,7 @@ export default function AddAddressScreen() {
     placeholder,
     keyboardType = "default",
     maxLength,
+    autoFocus,
   }: {
     label: string;
     value: string;
@@ -58,6 +77,7 @@ export default function AddAddressScreen() {
     placeholder: string;
     keyboardType?: any;
     maxLength?: number;
+    autoFocus?: boolean;
   }) => (
     <View style={styles.field}>
       <Text style={[styles.fieldLabel, { color: colors.secondary }]}>{label}</Text>
@@ -68,6 +88,7 @@ export default function AddAddressScreen() {
         placeholderTextColor={colors.mutedForeground}
         keyboardType={keyboardType}
         maxLength={maxLength}
+        autoFocus={autoFocus}
         style={[
           styles.input,
           { backgroundColor: colors.card, color: colors.primary, borderColor: colors.border },
@@ -111,7 +132,7 @@ export default function AddAddressScreen() {
               return (
                 <Pressable
                   key={type.id}
-                  onPress={() => setAddressType(type.id)}
+                  onPress={() => setAddressType(type.id as "home" | "work" | "other")}
                   style={[
                     styles.typeBtn,
                     {
@@ -139,7 +160,7 @@ export default function AddAddressScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionLabel, { color: colors.primary }]}>Address details</Text>
           <View style={styles.fields}>
-            <Field label="Flat / Door no. *" value={flat} onChange={setFlat} placeholder="e.g. Flat 4B" />
+            <Field label="Flat / Door no. *" value={flat} onChange={setFlat} placeholder="e.g. Flat 4B" autoFocus />
             <Field label="Building / Society" value={building} onChange={setBuilding} placeholder="e.g. Sunrise Apartments" />
             <Field label="Area / Locality *" value={area} onChange={setArea} placeholder="e.g. Koramangala 5th Block" />
             <View style={styles.row}>
@@ -147,7 +168,14 @@ export default function AddAddressScreen() {
                 <Field label="City *" value={city} onChange={setCity} placeholder="City" />
               </View>
               <View style={{ width: 110 }}>
-                <Field label="PIN code *" value={pincode} onChange={setPincode} placeholder="560034" keyboardType="number-pad" maxLength={6} />
+                <Field
+                  label="PIN code *"
+                  value={pincode}
+                  onChange={setPincode}
+                  placeholder="560034"
+                  keyboardType="number-pad"
+                  maxLength={6}
+                />
               </View>
             </View>
           </View>

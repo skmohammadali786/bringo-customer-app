@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -34,16 +35,16 @@ export default function InviteScreen() {
 
   const totalEarned = 400;
 
-  const handleCopy = () => {
-    if (Platform.OS === "web") {
-      navigator.clipboard
-        ?.writeText(referralCode)
-        .catch(() => {})
-        .finally(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
-        });
-    } else {
+  const handleCopy = async () => {
+    try {
+      if (Platform.OS === "web") {
+        await navigator.clipboard?.writeText(referralCode);
+      } else {
+        await Clipboard.setStringAsync(referralCode);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -169,7 +170,7 @@ export default function InviteScreen() {
               { step: "2", text: "They sign up with your code" },
               { step: "3", text: "They place their first order" },
               { step: "4", text: "You earn ₹200, they get ₹100 off!" },
-            ].map((row, i, arr) => (
+            ].map((row, i) => (
               <View key={row.step}>
                 {i > 0 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
                 <View style={styles.stepRow}>

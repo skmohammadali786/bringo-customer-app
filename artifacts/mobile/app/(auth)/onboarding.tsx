@@ -54,6 +54,8 @@ const SLIDES: Slide[] = [
   },
 ];
 
+const IMG_SIZE = width * 0.7;
+
 export default function OnboardingScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -87,7 +89,9 @@ export default function OnboardingScreen() {
 
   const renderItem: ListRenderItem<Slide> = ({ item }) => (
     <View style={styles.slide}>
-      <Image source={item.image} style={styles.illustration} resizeMode="contain" />
+      <View style={[styles.imgCircle, { backgroundColor: colors.muted }]}>
+        <Image source={item.image} style={styles.illustration} resizeMode="cover" />
+      </View>
       <View style={styles.textWrap}>
         <Text style={[styles.title, { color: colors.primary }]}>{item.title}</Text>
         <Text style={[styles.subtitle, { color: colors.secondary }]}>{item.subtitle}</Text>
@@ -189,10 +193,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.pagePadding,
   },
-  illustration: {
-    width: width * 0.75,
-    height: width * 0.75,
+  imgCircle: {
+    width: IMG_SIZE,
+    height: IMG_SIZE,
+    borderRadius: IMG_SIZE / 2,
+    overflow: "hidden",
     marginBottom: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  illustration: {
+    width: IMG_SIZE,
+    height: IMG_SIZE,
   },
   textWrap: { alignItems: "center", gap: 14 },
   title: {

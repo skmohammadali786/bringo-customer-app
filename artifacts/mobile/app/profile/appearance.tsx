@@ -14,12 +14,19 @@ const THEMES: { id: ThemePreference; label: string; icon: "sun" | "moon" | "smar
   { id: "system", label: "System", icon: "smartphone", desc: "Follow device setting" },
 ];
 
-const ACCENT_COLORS = ["#FF9A3D", "#4A90E2", "#34C759", "#9B59B6", "#E74C3C", "#1ABC9C"];
+const ACCENT_COLORS = [
+  { hex: "#FF9A3D", label: "Orange" },
+  { hex: "#4A90E2", label: "Blue" },
+  { hex: "#34C759", label: "Green" },
+  { hex: "#9B59B6", label: "Purple" },
+  { hex: "#E74C3C", label: "Red" },
+  { hex: "#1ABC9C", label: "Teal" },
+];
 
 export default function AppearanceScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { preference, setPreference } = useTheme();
+  const { preference, setPreference, accentColor, setAccentColor } = useTheme();
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 24;
 
   return (
@@ -107,22 +114,26 @@ export default function AppearanceScreen() {
           <Text style={[styles.sectionTitle, { color: colors.primary }]}>Accent color</Text>
           <View style={[styles.accentCard, { backgroundColor: colors.card }, shadows.sm]}>
             <View style={styles.accentRow}>
-              {ACCENT_COLORS.map((c) => (
-                <Pressable
-                  key={c}
-                  style={[
-                    styles.accentDot,
-                    {
-                      backgroundColor: c,
-                      transform: [
-                        { scale: colors.accentOrange === c || c === "#FF9A3D" ? 1.2 : 1 },
-                      ],
-                    },
-                  ]}
-                >
-                  {c === "#FF9A3D" && <Feather name="check" size={14} color="#FFF" />}
-                </Pressable>
-              ))}
+              {ACCENT_COLORS.map((c) => {
+                const active = accentColor === c.hex;
+                return (
+                  <Pressable
+                    key={c.hex}
+                    onPress={() => setAccentColor(c.hex)}
+                    style={[
+                      styles.accentDot,
+                      {
+                        backgroundColor: c.hex,
+                        transform: [{ scale: active ? 1.2 : 1 }],
+                        borderWidth: active ? 2 : 0,
+                        borderColor: "#FFF",
+                      },
+                    ]}
+                  >
+                    {active && <Feather name="check" size={14} color="#FFF" />}
+                  </Pressable>
+                );
+              })}
             </View>
             <View style={[styles.previewRow, { backgroundColor: colors.muted }]}>
               <View style={[styles.previewBtn, { backgroundColor: colors.accentOrange }]}>
