@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "287ibX231G486HWFQjMjG"
+uri = "file://artifacts/mobile/assets/images/icon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "nfFTTy-rOOjBQvQWvYVDP"
+uri = "file://artifacts/mobile/assets/images/onboarding1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "31ibOePG78SFhF04VElrQ"
+uri = "file://artifacts/mobile/assets/images/onboarding2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "mr0LMdnRjwovHj_lYuFqs"
+uri = "file://artifacts/mobile/assets/images/onboarding3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "TmsoSqwcEoZK3m9ja_Hvl"
+uri = "file://artifacts/mobile/assets/images/hero_products.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "IOJf941wdCBsyfC7KYnhT"
+uri = "file://artifacts/mobile/assets/images/category_groceries.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2gLpT67m_V7Zcsxlf_r-J"
+uri = "file://artifacts/mobile/assets/images/category_pharmacy.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "lpks1Ah4szPn_-2OAwEvf"
+uri = "file://artifacts/mobile/assets/images/category_electronics.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "pzHcKmaaWO52TAytqnxaD"
+uri = "file://artifacts/mobile/assets/images/empty_state.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1Th5RsJb3um7UEj1bXlbL"
+uri = "file://artifacts/mobile/assets/images/success_state.png"
+type = "image"
+title = "generated_image"
