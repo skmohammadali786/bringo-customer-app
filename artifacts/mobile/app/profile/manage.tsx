@@ -14,36 +14,45 @@ export default function ManageAccountScreen() {
   const { user, logout } = useAuth();
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 24;
 
-  const SECTIONS = [
+  type ManageItem = {
+    label: string;
+    icon: React.ComponentProps<typeof Feather>["name"];
+    route?: string;
+    action?: () => void;
+    color?: string;
+  };
+  type ManageSection = { title: string; items: ManageItem[] };
+
+  const SECTIONS: ManageSection[] = [
     {
       title: "Account",
       items: [
-        { label: "Personal information", icon: "user" as const, route: "/profile/personal" },
-        { label: "Saved addresses", icon: "map-pin" as const, route: "/profile/addresses" },
-        { label: "Payment methods", icon: "credit-card" as const, route: "/profile/payment-methods" },
-        { label: "Linked devices", icon: "smartphone" as const },
+        { label: "Personal information", icon: "user", route: "/profile/personal" },
+        { label: "Saved addresses", icon: "map-pin", route: "/profile/addresses" },
+        { label: "Payment methods", icon: "credit-card", route: "/profile/payment-methods" },
+        { label: "Linked devices", icon: "smartphone" },
       ],
     },
     {
       title: "Security",
       items: [
-        { label: "Change phone number", icon: "phone" as const },
-        { label: "Two-factor auth", icon: "shield" as const },
-        { label: "Login history", icon: "clock" as const },
+        { label: "Change phone number", icon: "phone" },
+        { label: "Two-factor auth", icon: "shield" },
+        { label: "Login history", icon: "clock" },
       ],
     },
     {
       title: "Data",
       items: [
-        { label: "Download my data", icon: "download" as const },
-        { label: "Privacy settings", icon: "eye" as const, route: "/profile/privacy" },
+        { label: "Download my data", icon: "download" },
+        { label: "Privacy settings", icon: "eye", route: "/profile/privacy" },
       ],
     },
     {
       title: "Danger zone",
       items: [
-        { label: "Sign out of all devices", icon: "log-out" as const, color: colors.danger, action: logout },
-        { label: "Delete account", icon: "trash-2" as const, color: colors.danger, route: "/profile/delete" },
+        { label: "Sign out of all devices", icon: "log-out", color: colors.danger, action: logout },
+        { label: "Delete account", icon: "trash-2", color: colors.danger, route: "/profile/delete" },
       ],
     },
   ];

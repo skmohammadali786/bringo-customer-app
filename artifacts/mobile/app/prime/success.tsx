@@ -55,9 +55,9 @@ export default function PrimeSuccessScreen() {
         </View>
 
         <View style={styles.bottomActions}>
-          <Button label="Start exploring" onPress={() => router.replace("/(tabs)" as any)} variant="primary"
-            style={[styles.ctaBtn, { backgroundColor: colors.accentOrange }]} />
-          <Button label="View Prime benefits" onPress={() => router.replace("/prime" as any)} variant="outline"
+          <Button label="Start exploring" onPress={() => router.replace("/(tabs)" as any)} variant="orange"
+            style={styles.ctaBtn} />
+          <Button label="View Prime benefits" onPress={() => router.replace("/prime" as any)} variant="ghost"
             style={styles.outlineBtn} />
         </View>
       </Animated.View>

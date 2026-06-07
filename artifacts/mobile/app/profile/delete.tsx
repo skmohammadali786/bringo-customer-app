@@ -91,9 +91,9 @@ export default function DeleteAccountScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: colors.background, paddingBottom: botPad }]}>
-        <Button label="Cancel" onPress={() => router.back()} variant="outline" style={styles.cancelBtn} />
+        <Button label="Cancel" onPress={() => router.back()} variant="ghost" style={styles.cancelBtn} />
         <Button label="Delete my account" onPress={handleDelete} loading={deleting} disabled={!isValid}
-          variant="primary" style={[styles.deleteBtn, { backgroundColor: colors.danger }]} />
+          variant="danger" style={styles.deleteBtn} />
       </View>
     </View>
   );

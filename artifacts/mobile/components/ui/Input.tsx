@@ -64,8 +64,8 @@ export const Input = forwardRef<TextInput, InputProps>(
                 color: colors.foreground,
                 fontFamily: "Inter_400Regular",
               },
-              prefix && styles.inputWithPrefix,
-              suffix && styles.inputWithSuffix,
+              prefix ? styles.inputWithPrefix : null,
+              suffix ? styles.inputWithSuffix : null,
               style,
             ]}
             placeholderTextColor={colors.mutedForeground}

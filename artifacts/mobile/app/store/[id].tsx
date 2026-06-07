@@ -56,7 +56,7 @@ export default function StoreDetailScreen() {
           </View>
           <View style={styles.badgeRow}>
             <Badge label="Open" variant="success" size="sm" />
-            <Badge label="Free delivery above ₹199" variant="muted" size="sm" />
+            <Badge label="Free delivery above ₹199" variant="default" size="sm" />
           </View>
         </View>
 

@@ -80,9 +80,9 @@ export default function CancelOrderScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: colors.background, paddingBottom: botPad }]}>
-        <Button label="Keep order" onPress={() => router.back()} variant="outline" style={styles.keepBtn} />
+        <Button label="Keep order" onPress={() => router.back()} variant="ghost" style={styles.keepBtn} />
         <Button label="Cancel order" onPress={handleCancel} loading={cancelling} disabled={!reason}
-          variant="primary" style={[styles.cancelBtn, { backgroundColor: colors.danger }]} />
+          variant="danger" style={styles.cancelBtn} />
       </View>
     </View>
   );

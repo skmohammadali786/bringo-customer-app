@@ -96,7 +96,7 @@ export default function ProductDetailScreen() {
         {/* Product Info */}
         <View style={[styles.section, { gap: 8 }]}>
           <View style={styles.categoryRow}>
-            <Badge label={product.category} variant="muted" size="sm" />
+            <Badge label={product.category} variant="default" size="sm" />
             {product.isTrending && <Badge label="Trending" variant="warning" size="sm" />}
           </View>
           <Text style={[styles.productName, { color: colors.primary }]}>{product.name}</Text>

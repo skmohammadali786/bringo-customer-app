@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.pagePadding,
   },
   testimonialText: { fontFamily: "Inter_400Regular", fontSize: 15, color: "rgba(247,245,240,0.9)", lineHeight: 22, fontStyle: "italic" },
-  testimonialAuthor: { fontFamily: "Inter_600SemiBold", fontSize: 13, color: colors => colors, opacity: 0.6 },
+  testimonialAuthor: { fontFamily: "Inter_600SemiBold", fontSize: 13, color: "rgba(247,245,240,0.6)" },
   footer: {
     position: "absolute",
     bottom: 0,

@@ -63,7 +63,7 @@ export default function NotificationDetailScreen() {
         {notif.type === "order" && (
           <View style={styles.actionsWrap}>
             <Button label="View order" onPress={() => router.push("/order/ORD7B1C" as any)} variant="primary" />
-            <Button label="Track delivery" onPress={() => router.push("/order/ORD7B1C" as any)} variant="outline" />
+            <Button label="Track delivery" onPress={() => router.push("/order/ORD7B1C" as any)} variant="ghost" />
           </View>
         )}
         {notif.type === "offer" && (

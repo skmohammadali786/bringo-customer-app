@@ -39,7 +39,7 @@ export default function SearchResultsScreen() {
       <View style={[styles.sortBar, { borderBottomColor: colors.border }]}>
         <Text style={[styles.resultsCount, { color: colors.mutedForeground }]}>{results.length} results</Text>
         <Pressable style={styles.sortBtn} onPress={() => setShowSort(!showSort)}>
-          <Feather name="chevrons-up-down" size={14} color={colors.secondary} />
+          <Feather name="chevrons-down" size={14} color={colors.secondary} />
           <Text style={[styles.sortText, { color: colors.secondary }]}>{SORT_OPTIONS[sortIdx]}</Text>
         </Pressable>
       </View>

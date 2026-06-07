@@ -27,7 +27,7 @@ type Slide = {
   id: string;
   title: string;
   subtitle: string;
-  image: ReturnType<typeof require>;
+  image: number;
 };
 
 const SLIDES: Slide[] = [

@@ -116,7 +116,7 @@ export default function LiveOrderScreen() {
 
         <View style={[styles.actions, { paddingBottom: botPad }]}>
           <Button label="Track on map" onPress={() => router.push("/agent/track" as any)} variant="primary" style={{ flex: 1 }} />
-          <Button label="Cancel" onPress={() => router.push("/order/cancel" as any)} variant="outline" style={{ flex: 1 }} />
+          <Button label="Cancel" onPress={() => router.push("/order/cancel" as any)} variant="secondary" style={{ flex: 1 }} />
         </View>
       </View>
     </View>

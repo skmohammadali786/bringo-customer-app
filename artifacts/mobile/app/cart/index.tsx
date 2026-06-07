@@ -20,7 +20,7 @@ import { shadows, spacing } from "@/constants/spacing";
 export default function CartScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { items, removeItem, updateQty, total, itemCount, clearCart } = useCart();
+  const { items, removeItem, updateQuantity, total, itemCount, clearCart } = useCart();
   const botPad = Math.max(insets.bottom, Platform.OS === "web" ? 34 : 0) + 16;
 
   const deliveryFee = total > 199 ? 0 : 29;
@@ -86,7 +86,7 @@ export default function CartScreen() {
                       onPress={() =>
                         item.quantity === 1
                           ? removeItem(item.product.id)
-                          : updateQty(item.product.id, item.quantity - 1)
+                          : updateQuantity(item.product.id, item.quantity - 1)
                       }
                       style={styles.qBtn}
                     >
@@ -98,7 +98,7 @@ export default function CartScreen() {
                     </Pressable>
                     <Text style={[styles.qtyText, { color: colors.primary }]}>{item.quantity}</Text>
                     <Pressable
-                      onPress={() => updateQty(item.product.id, item.quantity + 1)}
+                      onPress={() => updateQuantity(item.product.id, item.quantity + 1)}
                       style={styles.qBtn}
                     >
                       <Feather name="plus" size={14} color={colors.primary} />
