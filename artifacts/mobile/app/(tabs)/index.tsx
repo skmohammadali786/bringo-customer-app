@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
   Dimensions,
-  FlatList,
   Platform,
   Pressable,
   RefreshControl,
@@ -12,6 +11,10 @@ import {
   Text,
   View,
 } from "react-native";
+import Animated, {
+  FadeInDown,
+  FadeInRight,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OrderCard } from "@/components/home/OrderCard";
 import { ProductCard } from "@/components/home/ProductCard";
@@ -32,12 +35,17 @@ import { typography } from "@/constants/typography";
 
 const { width } = Dimensions.get("window");
 
-const GREETING = (() => {
+function getGreeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
-})();
+  if (h >= 5 && h < 12) return "Good morning";
+  if (h >= 12 && h < 14) return "Good noon";
+  if (h >= 14 && h < 17) return "Good afternoon";
+  if (h >= 17 && h < 20) return "Good evening";
+  if (h >= 20 && h < 23) return "Good night";
+  return "Good late night";
+}
+
+const GREETING = getGreeting();
 
 export default function HomeScreen() {
   const colors = useColors();
@@ -52,6 +60,16 @@ export default function HomeScreen() {
 
   const trending = PRODUCTS.filter((p) => p.isTrending);
   const recommended = PRODUCTS.filter((p) => p.isRecommended);
+
+  const filteredTrending =
+    selectedCat === "All"
+      ? trending
+      : trending.filter((p) => p.category === selectedCat);
+
+  const filteredRecommended =
+    selectedCat === "All"
+      ? recommended
+      : recommended.filter((p) => p.category === selectedCat);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -73,7 +91,10 @@ export default function HomeScreen() {
       }
     >
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + 16 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(0)}
+        style={[styles.header, { paddingTop: topPad + 16 }]}
+      >
         <Pressable
           style={styles.locationBtn}
           onPress={() => router.push("/profile/addresses" as any)}
@@ -104,26 +125,38 @@ export default function HomeScreen() {
             <Feather name="bell" size={18} color={colors.primary} />
           </Pressable>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Greeting */}
-      <View style={styles.greeting}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(80)}
+        style={styles.greeting}
+      >
         <Text style={[styles.greet, { color: colors.mutedForeground }]}>{GREETING}</Text>
         <Text style={[styles.name, { color: colors.primary }]}>
-          {user?.name ?? "there"} 
+          {user?.name ?? "there"} 👋
         </Text>
         <Text style={[styles.sub, { color: colors.secondary }]}>
           What do you need today?
         </Text>
-      </View>
+      </Animated.View>
 
       {/* Search */}
-      <View style={styles.section}>
-        <SearchBar />
-      </View>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(140)}
+        style={styles.section}
+      >
+        <SearchBar
+          onVoice={() => router.push("/search" as any)}
+          onImage={() => router.push("/search" as any)}
+        />
+      </Animated.View>
 
       {/* Categories */}
-      <View style={[styles.section, { paddingHorizontal: 0 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(200)}
+        style={[styles.section, { paddingHorizontal: 0 }]}
+      >
         <View style={{ paddingHorizontal: spacing.pagePadding, marginBottom: 12 }}>
           <SectionHeader title="Categories" seeAllHref="/categories" />
         </View>
@@ -132,7 +165,7 @@ export default function HomeScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.catScroll}
         >
-          {["All", ...CATEGORIES.map((c) => c.name)].map((cat, i) => {
+          {["All", ...CATEGORIES.map((c) => c.name)].map((cat) => {
             const isSelected = selectedCat === cat;
             const catData = CATEGORIES.find((c) => c.name === cat);
             return (
@@ -168,20 +201,26 @@ export default function HomeScreen() {
             );
           })}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {/* Active Orders */}
       {ACTIVE_ORDERS.length > 0 && (
-        <View style={styles.section}>
+        <Animated.View
+          entering={FadeInDown.duration(400).delay(260)}
+          style={styles.section}
+        >
           <SectionHeader title="Active Orders" seeAllHref="/(tabs)/orders" />
           {ACTIVE_ORDERS.map((order) => (
             <OrderCard key={order.id} order={order} />
           ))}
-        </View>
+        </Animated.View>
       )}
 
       {/* Trending */}
-      <View style={[styles.section, { paddingHorizontal: 0 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(300)}
+        style={[styles.section, { paddingHorizontal: 0 }]}
+      >
         <View style={{ paddingHorizontal: spacing.pagePadding }}>
           <SectionHeader
             title="Trending Now"
@@ -193,18 +232,22 @@ export default function HomeScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.productScroll}
         >
-          {trending.map((product) => (
+          {(filteredTrending.length > 0 ? filteredTrending : trending).map((product) => (
             <ProductCard
               key={product.id}
               product={product}
+              onPress={() => router.push(`/product/${product.id}` as any)}
               onAdd={() => addItem(product)}
             />
           ))}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {/* Offers */}
-      <View style={[styles.section, { paddingHorizontal: 0 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(340)}
+        style={[styles.section, { paddingHorizontal: 0 }]}
+      >
         <View style={{ paddingHorizontal: spacing.pagePadding }}>
           <SectionHeader title="Offers for you" />
         </View>
@@ -234,25 +277,32 @@ export default function HomeScreen() {
             </Pressable>
           ))}
         </ScrollView>
-      </View>
+      </Animated.View>
 
       {/* Recommended */}
-      <View style={styles.section}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(380)}
+        style={styles.section}
+      >
         <SectionHeader title="Recommended" />
         <View style={styles.productGrid}>
-          {recommended.map((product, i) => (
+          {(filteredRecommended.length > 0 ? filteredRecommended : recommended).map((product) => (
             <ProductCard
               key={product.id}
               product={product}
+              onPress={() => router.push(`/product/${product.id}` as any)}
               width={(width - spacing.pagePadding * 2 - 12) / 2}
               onAdd={() => addItem(product)}
             />
           ))}
         </View>
-      </View>
+      </Animated.View>
 
       {/* Request Banner */}
-      <View style={styles.section}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(420)}
+        style={styles.section}
+      >
         <Pressable
           onPress={() => router.push("/request" as any)}
           style={[styles.requestBanner, { backgroundColor: colors.primary }, shadows.lg]}
@@ -269,7 +319,7 @@ export default function HomeScreen() {
             <Feather name="plus" size={20} color="#FFFFFF" />
           </View>
         </Pressable>
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -290,7 +340,13 @@ const styles = StyleSheet.create({
     maxWidth: 180,
   },
   headerRight: { flexDirection: "row", gap: 10, alignItems: "center" },
-  iconBtn: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  iconBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   cartBtn: {
     width: 40,
     height: 40,
@@ -366,5 +422,11 @@ const styles = StyleSheet.create({
   requestLeft: { flex: 1, gap: 4 },
   requestTitle: { fontFamily: "Inter_700Bold", fontSize: 18, letterSpacing: -0.5 },
   requestSub: { fontFamily: "Inter_400Regular", fontSize: 13 },
-  requestIcon: { width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  requestIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

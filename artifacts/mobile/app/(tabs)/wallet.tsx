@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
 import {
   Platform,
@@ -8,6 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
@@ -28,12 +30,15 @@ export default function WalletScreen() {
       contentContainerStyle={{ paddingBottom: botPad }}
       showsVerticalScrollIndicator={false}
     >
-      <View style={[styles.header, { paddingTop: topPad + 16 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(0)}
+        style={[styles.header, { paddingTop: topPad + 16 }]}
+      >
         <Text style={[styles.title, { color: colors.primary }]}>Wallet</Text>
-      </View>
+      </Animated.View>
 
       {/* Balance Card */}
-      <View style={styles.balanceWrap}>
+      <Animated.View entering={FadeInDown.duration(400).delay(80)} style={styles.balanceWrap}>
         <View style={[styles.balanceCard, { backgroundColor: colors.primary }, shadows.lg]}>
           <View style={styles.balanceTop}>
             <View style={[styles.walletIcon, { backgroundColor: "rgba(247,245,240,0.15)" }]}>
@@ -50,11 +55,17 @@ export default function WalletScreen() {
             ₹{user?.walletBalance?.toLocaleString("en-IN") ?? "0"}
           </Text>
           <View style={styles.balanceActions}>
-            <Pressable style={[styles.walletBtn, { backgroundColor: colors.accentOrange }]}>
+            <Pressable
+              style={[styles.walletBtn, { backgroundColor: colors.accentOrange }]}
+              onPress={() => router.push("/wallet/add" as any)}
+            >
               <Feather name="plus" size={16} color="#FFF" />
               <Text style={styles.walletBtnText}>Add Money</Text>
             </Pressable>
-            <Pressable style={[styles.walletBtn, { backgroundColor: "rgba(247,245,240,0.15)" }]}>
+            <Pressable
+              style={[styles.walletBtn, { backgroundColor: "rgba(247,245,240,0.15)" }]}
+              onPress={() => router.push("/wallet/transfer" as any)}
+            >
               <Feather name="arrow-up-right" size={16} color={colors.primaryForeground} />
               <Text style={[styles.walletBtnText, { color: colors.primaryForeground }]}>
                 Transfer
@@ -62,10 +73,13 @@ export default function WalletScreen() {
             </Pressable>
           </View>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Quick Stats */}
-      <View style={[styles.section, { flexDirection: "row", gap: 12 }]}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(160)}
+        style={[styles.section, { flexDirection: "row", gap: 12 }]}
+      >
         {[
           { label: "Total Spent", value: "₹4,082", icon: "shopping-bag" as const, color: colors.accentOrange },
           { label: "Cashback Earned", value: "₹250", icon: "gift" as const, color: colors.accentGreen },
@@ -79,13 +93,11 @@ export default function WalletScreen() {
             <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{stat.label}</Text>
           </View>
         ))}
-      </View>
+      </Animated.View>
 
       {/* Transaction History */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.primary }]}>
-          Recent Transactions
-        </Text>
+      <Animated.View entering={FadeInDown.duration(400).delay(240)} style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.primary }]}>Recent Transactions</Text>
         <View style={[styles.txCard, { backgroundColor: colors.card }, shadows.sm]}>
           {WALLET_TRANSACTIONS.map((tx, i) => (
             <View key={tx.id}>
@@ -115,9 +127,7 @@ export default function WalletScreen() {
                 <Text
                   style={[
                     styles.txAmount,
-                    {
-                      color: tx.type === "credit" ? colors.accentGreen : colors.primary,
-                    },
+                    { color: tx.type === "credit" ? colors.accentGreen : colors.primary },
                   ]}
                 >
                   {tx.type === "credit" ? "+" : "-"}₹{tx.amount}
@@ -126,7 +136,7 @@ export default function WalletScreen() {
             </View>
           ))}
         </View>
-      </View>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -137,7 +147,12 @@ const styles = StyleSheet.create({
   title: { ...typography.h2 },
   balanceWrap: { paddingHorizontal: spacing.pagePadding, marginTop: 20 },
   balanceCard: { borderRadius: 28, padding: 24, gap: 8 },
-  balanceTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
+  balanceTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
   walletIcon: { width: 44, height: 44, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   cashbackBadge: { borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 },
   cashbackText: { fontFamily: "Inter_600SemiBold", fontSize: 12, color: "#FFF" },

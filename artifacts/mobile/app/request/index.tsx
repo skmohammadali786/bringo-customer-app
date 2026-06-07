@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/Button";
 import { useColors } from "@/hooks/useColors";
@@ -20,7 +21,14 @@ import { typography } from "@/constants/typography";
 const STEPS = ["Details", "Preferences", "Budget", "Review"];
 
 const BUDGET_OPTIONS = ["Under ₹100", "₹100–₹500", "₹500–₹2000", "₹2000+", "No limit"];
-const CATEGORIES = ["Groceries", "Pharmacy", "Electronics", "Personal Care", "Home & Kitchen", "Other"];
+const CATEGORIES = [
+  "Groceries",
+  "Pharmacy",
+  "Electronics",
+  "Personal Care",
+  "Home & Kitchen",
+  "Other",
+];
 
 export default function RequestProductScreen() {
   const colors = useColors();
@@ -46,7 +54,7 @@ export default function RequestProductScreen() {
     } else {
       setSubmitting(true);
       await new Promise((r) => setTimeout(r, 1500));
-      router.replace("/order/success" as any);
+      router.replace("/request/success" as any);
     }
   };
 
@@ -55,16 +63,25 @@ export default function RequestProductScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={[styles.header, { paddingTop: topPad + 16 }]}>
-        <Pressable onPress={() => (step > 0 ? setStep((s) => s - 1) : router.back())} style={styles.backBtn}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(0)}
+        style={[styles.header, { paddingTop: topPad + 16 }]}
+      >
+        <Pressable
+          onPress={() => (step > 0 ? setStep((s) => s - 1) : router.back())}
+          style={styles.backBtn}
+        >
           <Feather name="arrow-left" size={22} color={colors.primary} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.primary }]}>Request Product</Text>
         <View style={{ width: 40 }} />
-      </View>
+      </Animated.View>
 
       {/* Step Progress */}
-      <View style={styles.progressWrap}>
+      <Animated.View
+        entering={FadeInDown.duration(400).delay(60)}
+        style={styles.progressWrap}
+      >
         {STEPS.map((s, i) => (
           <View key={s} style={styles.stepItem}>
             <View
@@ -86,37 +103,47 @@ export default function RequestProductScreen() {
             )}
           </View>
         ))}
-      </View>
+      </Animated.View>
 
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: botPad }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <Text style={[styles.stepLabel, { color: colors.mutedForeground }]}>
-          Step {step + 1} of {STEPS.length}
-        </Text>
-        <Text style={[styles.stepTitle, { color: colors.primary }]}>
-          {step === 0 && "What do you need?"}
-          {step === 1 && "Any preferences?"}
-          {step === 2 && "What's your budget?"}
-          {step === 3 && "Review your request"}
-        </Text>
+        <Animated.View entering={FadeInDown.duration(400).delay(100)}>
+          <Text style={[styles.stepLabel, { color: colors.mutedForeground }]}>
+            Step {step + 1} of {STEPS.length}
+          </Text>
+          <Text style={[styles.stepTitle, { color: colors.primary }]}>
+            {step === 0 && "What do you need?"}
+            {step === 1 && "Any preferences?"}
+            {step === 2 && "What's your budget?"}
+            {step === 3 && "Review your request"}
+          </Text>
+        </Animated.View>
 
         {step === 0 && (
-          <View style={styles.fields}>
+          <Animated.View entering={FadeInDown.duration(400).delay(160)} style={styles.fields}>
             <View style={styles.field}>
-              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Product Name *</Text>
+              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>
+                Product Name *
+              </Text>
               <TextInput
                 value={productName}
                 onChangeText={setProductName}
                 placeholder="e.g. Organic Whole Milk 500ml"
                 placeholderTextColor={colors.mutedForeground}
-                style={[styles.inputField, { backgroundColor: colors.card, color: colors.primary }, shadows.sm]}
+                style={[
+                  styles.inputField,
+                  { backgroundColor: colors.card, color: colors.primary },
+                  shadows.sm,
+                ]}
               />
             </View>
             <View style={styles.field}>
-              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Description (optional)</Text>
+              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>
+                Description (optional)
+              </Text>
               <TextInput
                 value={description}
                 onChangeText={setDescription}
@@ -124,7 +151,12 @@ export default function RequestProductScreen() {
                 placeholderTextColor={colors.mutedForeground}
                 multiline
                 numberOfLines={3}
-                style={[styles.inputField, styles.textarea, { backgroundColor: colors.card, color: colors.primary }, shadows.sm]}
+                style={[
+                  styles.inputField,
+                  styles.textarea,
+                  { backgroundColor: colors.card, color: colors.primary },
+                  shadows.sm,
+                ]}
               />
             </View>
             <View style={styles.field}>
@@ -136,9 +168,7 @@ export default function RequestProductScreen() {
                     onPress={() => setCategory(c)}
                     style={[
                       styles.chip,
-                      {
-                        backgroundColor: category === c ? colors.primary : colors.card,
-                      },
+                      { backgroundColor: category === c ? colors.primary : colors.card },
                       shadows.sm,
                     ]}
                   >
@@ -154,11 +184,11 @@ export default function RequestProductScreen() {
                 ))}
               </View>
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {step === 1 && (
-          <View style={styles.fields}>
+          <Animated.View entering={FadeInDown.duration(400).delay(160)} style={styles.fields}>
             <View style={styles.field}>
               <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Quantity</Text>
               <View style={styles.quantityRow}>
@@ -178,20 +208,26 @@ export default function RequestProductScreen() {
               </View>
             </View>
             <View style={styles.field}>
-              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Brand preference (optional)</Text>
+              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>
+                Brand preference (optional)
+              </Text>
               <TextInput
                 value={brand}
                 onChangeText={setBrand}
                 placeholder="e.g. Amul, Samsung, etc."
                 placeholderTextColor={colors.mutedForeground}
-                style={[styles.inputField, { backgroundColor: colors.card, color: colors.primary }, shadows.sm]}
+                style={[
+                  styles.inputField,
+                  { backgroundColor: colors.card, color: colors.primary },
+                  shadows.sm,
+                ]}
               />
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {step === 2 && (
-          <View style={styles.fields}>
+          <Animated.View entering={FadeInDown.duration(400).delay(160)} style={styles.fields}>
             <View style={styles.field}>
               <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Budget range</Text>
               <View style={styles.budgetGrid}>
@@ -221,7 +257,9 @@ export default function RequestProductScreen() {
               </View>
             </View>
             <View style={styles.field}>
-              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>Special notes (optional)</Text>
+              <Text style={[styles.fieldLabel, { color: colors.secondary }]}>
+                Special notes (optional)
+              </Text>
               <TextInput
                 value={notes}
                 onChangeText={setNotes}
@@ -229,31 +267,44 @@ export default function RequestProductScreen() {
                 placeholderTextColor={colors.mutedForeground}
                 multiline
                 numberOfLines={3}
-                style={[styles.inputField, styles.textarea, { backgroundColor: colors.card, color: colors.primary }, shadows.sm]}
+                style={[
+                  styles.inputField,
+                  styles.textarea,
+                  { backgroundColor: colors.card, color: colors.primary },
+                  shadows.sm,
+                ]}
               />
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {step === 3 && (
-          <View style={[styles.reviewCard, { backgroundColor: colors.card }, shadows.card]}>
-            {[
-              { label: "Product", value: productName || "—" },
-              { label: "Category", value: category || "Not specified" },
-              { label: "Quantity", value: `${quantity}` },
-              { label: "Brand", value: brand || "Any brand" },
-              { label: "Budget", value: budget || "Not specified" },
-              { label: "Notes", value: notes || "None" },
-            ].map((row, i, arr) => (
-              <View key={row.label}>
-                {i > 0 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
-                <View style={styles.reviewRow}>
-                  <Text style={[styles.reviewLabel, { color: colors.mutedForeground }]}>{row.label}</Text>
-                  <Text style={[styles.reviewValue, { color: colors.primary }]}>{row.value}</Text>
+          <Animated.View entering={FadeInDown.duration(400).delay(160)}>
+            <View style={[styles.reviewCard, { backgroundColor: colors.card }, shadows.card]}>
+              {[
+                { label: "Product", value: productName || "—" },
+                { label: "Category", value: category || "Not specified" },
+                { label: "Quantity", value: `${quantity}` },
+                { label: "Brand", value: brand || "Any brand" },
+                { label: "Budget", value: budget || "Not specified" },
+                { label: "Notes", value: notes || "None" },
+              ].map((row, i) => (
+                <View key={row.label}>
+                  {i > 0 && (
+                    <View style={[styles.divider, { backgroundColor: colors.border }]} />
+                  )}
+                  <View style={styles.reviewRow}>
+                    <Text style={[styles.reviewLabel, { color: colors.mutedForeground }]}>
+                      {row.label}
+                    </Text>
+                    <Text style={[styles.reviewValue, { color: colors.primary }]}>
+                      {row.value}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          </Animated.View>
         )}
       </ScrollView>
 
@@ -280,12 +331,22 @@ const styles = StyleSheet.create({
   },
   backBtn: { width: 40, height: 40, alignItems: "center", justifyContent: "center" },
   headerTitle: { ...typography.bodySemiBold, fontSize: 17 },
-  progressWrap: { flexDirection: "row", alignItems: "center", paddingHorizontal: spacing.pagePadding, marginVertical: 16 },
+  progressWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: spacing.pagePadding,
+    marginVertical: 16,
+  },
   stepItem: { flex: 1, flexDirection: "row", alignItems: "center" },
   stepDot: { height: 8, borderRadius: 4 },
   stepLine: { flex: 1, height: 2, marginHorizontal: 4 },
   content: { paddingHorizontal: spacing.pagePadding, paddingTop: 8 },
-  stepLabel: { ...typography.caption, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 },
+  stepLabel: {
+    ...typography.caption,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: 6,
+  },
   stepTitle: { fontSize: 30, fontFamily: "Inter_700Bold", letterSpacing: -1, marginBottom: 28 },
   fields: { gap: 24 },
   field: { gap: 10 },

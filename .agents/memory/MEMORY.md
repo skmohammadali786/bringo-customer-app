@@ -1,1 +1,1 @@
-- [Bringo App Architecture](bringo-architecture.md) — Expo SDK 54 hyperlocal commerce app; 50 screens, AsyncStorage auth, no backend.
+- [Bringo App Architecture](bringo-architecture.md) — Expo SDK 54 hyperlocal commerce app; 50+ screens, AsyncStorage auth, no backend. ThemeContext, animation patterns, white flash fix, invite/linking/photo-upload patterns.
