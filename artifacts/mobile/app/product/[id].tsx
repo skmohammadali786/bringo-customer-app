@@ -74,13 +74,7 @@ export default function ProductDetailScreen() {
         {/* Hero Image */}
         <View style={[styles.heroCard, { backgroundColor: colors.muted, marginHorizontal: spacing.pagePadding }]}>
           <View style={styles.heroContent}>
-            <Text style={styles.heroEmoji}>
-              {product.category === "Groceries" ? "🥛" :
-               product.category === "Pharmacy" ? "💊" :
-               product.category === "Electronics" ? "⚡" :
-               product.category === "Bakery" ? "🍞" :
-               product.category === "Personal Care" ? "🧴" : "📦"}
-            </Text>
+            <Text style={styles.heroEmoji}>{product.emoji ?? "📦"}</Text>
           </View>
           {discount > 0 && (
             <View style={[styles.discountTag, { backgroundColor: colors.danger }]}>

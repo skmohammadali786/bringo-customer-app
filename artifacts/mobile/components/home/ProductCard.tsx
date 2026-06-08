@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
-import { Badge } from "@/components/ui/Badge";
 import { useColors } from "@/hooks/useColors";
 import { shadows } from "@/constants/spacing";
 import { typography } from "@/constants/typography";
@@ -22,6 +21,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   Bakery: "#FF6B6B",
   Sports: "#111111",
   "Pet Supplies": "#9B59B6",
+  Stationery: "#3498DB",
+  Beverages: "#1ABC9C",
 };
 
 type ProductCardProps = {
@@ -63,20 +64,29 @@ export function ProductCard({ product, onPress, onAdd, width = 175 }: ProductCar
     <Animated.View style={animStyle}>
       <Pressable
         onPress={onPress}
-        onPressIn={() => {
-          cardScale.value = withSpring(0.98, { damping: 15 });
-        }}
-        onPressOut={() => {
-          cardScale.value = withSpring(1, { damping: 15 });
-        }}
+        onPressIn={() => { cardScale.value = withSpring(0.98, { damping: 15 }); }}
+        onPressOut={() => { cardScale.value = withSpring(1, { damping: 15 }); }}
         style={[styles.card, { backgroundColor: colors.card, width, borderRadius: 24 }, shadows.card]}
       >
-        <View style={[styles.imageContainer, { backgroundColor: colors.muted }]}>
-          <View style={[styles.colorDot, { backgroundColor: accentColor }]} />
-          <Feather name="package" size={32} color={accentColor} />
+        {/* Image area with emoji */}
+        <View
+          style={[
+            styles.imageContainer,
+            { backgroundColor: accentColor + "18" },
+          ]}
+        >
+          <Text style={styles.emojiText}>{product.emoji ?? "📦"}</Text>
           <View style={[styles.etaBadge, { backgroundColor: colors.primary }]}>
+            <Feather name="clock" size={9} color="#F7F5F0" />
             <Text style={styles.etaText}>{product.eta}</Text>
           </View>
+          {product.originalPrice && (
+            <View style={[styles.discountBadge, { backgroundColor: colors.danger }]}>
+              <Text style={styles.discountText}>
+                -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.content}>
@@ -102,10 +112,10 @@ export function ProductCard({ product, onPress, onAdd, width = 175 }: ProductCar
                 onPress={handleAdd}
                 style={[
                   styles.addBtn,
-                  { backgroundColor: added ? colors.accentGreen : colors.primary },
+                  { backgroundColor: added ? colors.accentGreen : accentColor },
                 ]}
               >
-                <Feather name={added ? "check" : "plus"} size={16} color={colors.primaryForeground} />
+                <Feather name={added ? "check" : "plus"} size={16} color="#FFF" />
               </Pressable>
             </Animated.View>
           </View>
@@ -116,11 +126,9 @@ export function ProductCard({ product, onPress, onAdd, width = 175 }: ProductCar
 }
 
 const styles = StyleSheet.create({
-  card: {
-    overflow: "hidden",
-  },
+  card: { overflow: "hidden" },
   imageContainer: {
-    height: 120,
+    height: 130,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 16,
@@ -128,57 +136,61 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     position: "relative",
   },
-  colorDot: {
-    position: "absolute",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    opacity: 0.15,
+  emojiText: {
+    fontSize: 56,
+    lineHeight: 68,
   },
   etaBadge: {
     position: "absolute",
     top: 8,
     right: 8,
     borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
   },
   etaText: {
     fontFamily: "Inter_600SemiBold",
-    fontSize: 10,
+    fontSize: 9,
     color: "#F7F5F0",
   },
-  content: {
-    padding: 12,
-    gap: 2,
+  discountBadge: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
   },
+  discountText: {
+    fontFamily: "Inter_700Bold",
+    fontSize: 9,
+    color: "#FFF",
+  },
+  content: { padding: 12, gap: 2 },
   name: {
     ...typography.bodyMedium,
     fontSize: 14,
     lineHeight: 18,
   },
-  unit: {
-    ...typography.caption,
-    marginTop: 2,
-  },
+  unit: { ...typography.caption, marginTop: 2 },
   priceRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 8,
   },
-  price: {
-    ...typography.price,
-    fontSize: 17,
-  },
+  price: { ...typography.price, fontSize: 17 },
   originalPrice: {
     fontSize: 11,
     fontFamily: "Inter_400Regular",
     textDecorationLine: "line-through",
   },
   addBtn: {
-    width: 32,
-    height: 32,
+    width: 34,
+    height: 34,
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",

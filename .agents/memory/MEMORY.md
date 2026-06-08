@@ -1,1 +1,2 @@
 - [Bringo App Architecture](bringo-architecture.md) — Expo SDK 54 hyperlocal commerce app; 50+ screens, AsyncStorage auth, no backend. ThemeContext, animation patterns, white flash fix, invite/linking/photo-upload patterns.
+- [Bringo Auth Flow](bringo-auth-flow.md) — Correct flow: splash→welcome→onboarding→login→otp→register→tabs. login(phone,name) order. "Already have account" skips onboarding.

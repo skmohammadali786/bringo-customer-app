@@ -30,6 +30,9 @@ const SUGGESTIONS = [
   "Hand sanitizer",
   "Vitamin C",
   "Almond butter",
+  "Green tea",
+  "Yoga mat",
+  "Dog food",
 ];
 
 const RECENT = ["Organic milk", "USB charger", "Bread"];
@@ -70,9 +73,9 @@ export default function SearchScreen() {
       const timeout = setTimeout(() => {
         pulse.stop();
         setVoiceActive(false);
-        setQuery("organic milk");
         setSearchMode("text");
-      }, 3000);
+        inputRef.current?.focus();
+      }, 5000);
       return () => {
         pulse.stop();
         clearTimeout(timeout);
@@ -98,7 +101,7 @@ export default function SearchScreen() {
 
   const handleImageSearch = async () => {
     if (Platform.OS === "web") {
-      setQuery("organic milk");
+      setSearchMode("text");
       return;
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -113,22 +116,20 @@ export default function SearchScreen() {
         setImageUri(result.assets[0].uri);
         setSearchMode("image");
         setTimeout(() => {
-          setQuery("organic milk");
           setSearchMode("text");
           setImageUri(null);
+          inputRef.current?.focus();
         }, 2500);
       }
     } else {
-      const result = await ImagePicker.launchCameraAsync({
-        quality: 0.7,
-      });
+      const result = await ImagePicker.launchCameraAsync({ quality: 0.7 });
       if (!result.canceled && result.assets[0]) {
         setImageUri(result.assets[0].uri);
         setSearchMode("image");
         setTimeout(() => {
-          setQuery("organic milk");
           setSearchMode("text");
           setImageUri(null);
+          inputRef.current?.focus();
         }, 2500);
       }
     }
@@ -193,7 +194,10 @@ export default function SearchScreen() {
 
       {/* Voice overlay */}
       {searchMode === "voice" && voiceActive && (
-        <Animated.View entering={FadeIn.duration(300)} style={[styles.modeOverlay, { backgroundColor: colors.background }]}>
+        <Animated.View
+          entering={FadeIn.duration(300)}
+          style={[styles.modeOverlay, { backgroundColor: colors.background }]}
+        >
           <View style={[styles.voiceCircle, { backgroundColor: colors.danger + "18" }]}>
             <RNAnimated.View
               style={[
@@ -220,7 +224,10 @@ export default function SearchScreen() {
 
       {/* Image search overlay */}
       {searchMode === "image" && imageUri && (
-        <Animated.View entering={FadeIn.duration(300)} style={[styles.modeOverlay, { backgroundColor: colors.background }]}>
+        <Animated.View
+          entering={FadeIn.duration(300)}
+          style={[styles.modeOverlay, { backgroundColor: colors.background }]}
+        >
           <View style={styles.imgPreviewWrap}>
             <Image source={{ uri: imageUri }} style={styles.imgPreview} resizeMode="cover" />
             <View style={[styles.imgScanLine, { backgroundColor: colors.accentOrange }]} />
@@ -235,7 +242,6 @@ export default function SearchScreen() {
       {/* Normal search UI */}
       {searchMode === "text" && (
         <>
-          {/* Filters shortcut */}
           {query.trim().length > 0 && (
             <Animated.View entering={FadeInDown.duration(300)}>
               <Pressable
@@ -253,7 +259,6 @@ export default function SearchScreen() {
             </Animated.View>
           )}
 
-          {/* Content */}
           {!query.trim() ? (
             <Animated.View entering={FadeInDown.duration(400).delay(100)} style={styles.suggestions}>
               <Text style={[styles.sectionTitle, { color: colors.primary }]}>Recent</Text>
@@ -341,23 +346,15 @@ const styles = StyleSheet.create({
   },
   backBtn: { width: 40, height: 40, alignItems: "center", justifyContent: "center" },
   inputWrap: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    height: 48,
+    flex: 1, flexDirection: "row", alignItems: "center",
+    gap: 10, borderRadius: 16, paddingHorizontal: 14, height: 48,
   },
   input: { flex: 1, fontSize: 16 },
   voiceBtn: { width: 48, height: 48, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   filterBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.pagePadding,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    gap: 6,
+    flexDirection: "row", alignItems: "center",
+    paddingHorizontal: spacing.pagePadding, paddingVertical: 10,
+    borderBottomWidth: 1, gap: 6,
   },
   filterText: { fontFamily: "Inter_600SemiBold", fontSize: 13, flex: 1 },
   resultCount: { fontFamily: "Inter_400Regular", fontSize: 12 },
@@ -365,87 +362,33 @@ const styles = StyleSheet.create({
   sectionTitle: { ...typography.sectionTitle, marginBottom: 12 },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
+    flexDirection: "row", alignItems: "center",
+    gap: 6, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
   },
   chipText: { fontFamily: "Inter_400Regular", fontSize: 14 },
-  emptyWrap: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 40,
-    gap: 12,
-  },
+  emptyWrap: { flex: 1, alignItems: "center", justifyContent: "center", padding: 40, gap: 12 },
   emptyTitle: { ...typography.h4, textAlign: "center" },
   emptyDesc: { ...typography.body, textAlign: "center" },
-  requestBtn: {
-    marginTop: 8,
-    borderRadius: 999,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-  },
+  requestBtn: { marginTop: 8, borderRadius: 999, paddingHorizontal: 24, paddingVertical: 14 },
   requestText: { fontFamily: "Inter_600SemiBold", fontSize: 15 },
   resultList: { paddingHorizontal: spacing.pagePadding, paddingBottom: 40, gap: 12 },
   row: { gap: 12 },
   modeOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 20,
-    zIndex: 10,
-    paddingTop: 120,
+    position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+    alignItems: "center", justifyContent: "center",
+    gap: 20, zIndex: 10, paddingTop: 120,
   },
   voiceCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 160, height: 160, borderRadius: 80,
+    alignItems: "center", justifyContent: "center",
   },
-  voicePulse: {
-    position: "absolute",
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-  },
-  voiceInner: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  voicePulse: { position: "absolute", width: 130, height: 130, borderRadius: 65 },
+  voiceInner: { width: 88, height: 88, borderRadius: 44, alignItems: "center", justifyContent: "center" },
   voiceTitle: { fontFamily: "Inter_700Bold", fontSize: 24, letterSpacing: -0.5 },
   voiceSub: { fontFamily: "Inter_400Regular", fontSize: 15, textAlign: "center", maxWidth: 260 },
-  voiceCancelBtn: {
-    marginTop: 12,
-    borderRadius: 999,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-  },
+  voiceCancelBtn: { marginTop: 12, borderRadius: 999, paddingHorizontal: 28, paddingVertical: 14 },
   voiceCancelText: { fontFamily: "Inter_600SemiBold", fontSize: 15 },
-  imgPreviewWrap: {
-    width: 220,
-    height: 220,
-    borderRadius: 24,
-    overflow: "hidden",
-    position: "relative",
-  },
+  imgPreviewWrap: { width: 220, height: 220, borderRadius: 24, overflow: "hidden", position: "relative" },
   imgPreview: { width: "100%", height: "100%" },
-  imgScanLine: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    height: 2,
-    top: "50%",
-    opacity: 0.8,
-  },
+  imgScanLine: { position: "absolute", left: 0, right: 0, height: 2, top: "50%", opacity: 0.8 },
 });

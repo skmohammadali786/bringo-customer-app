@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import React, { useRef, useState } from "react";
 import {
@@ -31,6 +32,14 @@ export default function LoginScreen() {
   const handleSendOTP = () => {
     if (!isValid) return;
     router.push({ pathname: "/(auth)/otp", params: { phone } });
+  };
+
+  const openTerms = async () => {
+    router.push("/profile/terms" as any);
+  };
+
+  const openPrivacy = async () => {
+    router.push("/profile/privacy" as any);
   };
 
   return (
@@ -102,11 +111,17 @@ export default function LoginScreen() {
           />
           <Text style={[styles.terms, { color: colors.mutedForeground }]}>
             By continuing you agree to our{" "}
-            <Text style={{ color: colors.primary, fontFamily: "Inter_500Medium" }}>
+            <Text
+              style={{ color: colors.primary, fontFamily: "Inter_500Medium" }}
+              onPress={openTerms}
+            >
               Terms of Service
-            </Text>{" "}
-            and{" "}
-            <Text style={{ color: colors.primary, fontFamily: "Inter_500Medium" }}>
+            </Text>
+            {" "}and{" "}
+            <Text
+              style={{ color: colors.primary, fontFamily: "Inter_500Medium" }}
+              onPress={openPrivacy}
+            >
               Privacy Policy
             </Text>
           </Text>
@@ -122,28 +137,16 @@ const styles = StyleSheet.create({
   backBtn: { width: 44, height: 44, alignItems: "flex-start", justifyContent: "center" },
   headline: { gap: 10 },
   title: {
-    fontSize: 36,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -1.5,
-    lineHeight: 42,
+    fontSize: 36, fontFamily: "Inter_700Bold",
+    letterSpacing: -1.5, lineHeight: 42,
   },
   sub: { ...typography.body },
   inputCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 20,
-    padding: 14,
-    gap: 12,
+    flexDirection: "row", alignItems: "center",
+    borderRadius: 20, padding: 14, gap: 12,
   },
-  prefix: {
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  prefixText: {
-    fontFamily: "Inter_600SemiBold",
-    fontSize: 16,
-  },
+  prefix: { borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8 },
+  prefixText: { fontFamily: "Inter_600SemiBold", fontSize: 16 },
   input: { flex: 1, fontSize: 20, letterSpacing: 1 },
   actions: { gap: 16 },
   terms: { ...typography.small, textAlign: "center", lineHeight: 18 },

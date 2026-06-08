@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { Dimensions, Platform, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,6 +12,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/Button";
 import { useColors } from "@/hooks/useColors";
 import { spacing } from "@/constants/spacing";
+
+const { width } = Dimensions.get("window");
+const CIRCLE = Math.min(width * 0.68, 280);
 
 export default function WelcomeScreen() {
   const colors = useColors();
@@ -49,12 +52,18 @@ export default function WelcomeScreen() {
       </View>
 
       <View style={styles.hero}>
-        <Animated.View style={a1}>
-          <Image
-            source={require("@/assets/images/hero_products.png")}
-            style={styles.heroImage}
-            resizeMode="contain"
-          />
+        <Animated.View style={[a1, styles.imageWrap]}>
+          <View
+            style={[
+              styles.imgCircle,
+              { backgroundColor: colors.muted, borderColor: colors.border },
+            ]}
+          >
+            <Text style={styles.heroEmoji}>🛵</Text>
+            <Text style={styles.floatEmoji1}>🛒</Text>
+            <Text style={styles.floatEmoji2}>📦</Text>
+            <Text style={styles.floatEmoji3}>⚡</Text>
+          </View>
         </Animated.View>
 
         <Animated.Text style={[styles.headline, { color: colors.primary }, a2]}>
@@ -66,12 +75,10 @@ export default function WelcomeScreen() {
         </Animated.Text>
       </View>
 
-      <Animated.View
-        style={[styles.actions, { paddingBottom: botPad + 32 }, a3]}
-      >
+      <Animated.View style={[styles.actions, { paddingBottom: botPad + 32 }, a3]}>
         <Button
           label="Get Started"
-          onPress={() => router.push("/(auth)/login")}
+          onPress={() => router.push("/(auth)/onboarding")}
           variant="primary"
         />
         <Button
@@ -88,31 +95,51 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingHorizontal: spacing.pagePadding, paddingBottom: 8 },
   logoBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 40, height: 40, borderRadius: 14,
+    alignItems: "center", justifyContent: "center",
   },
   logoLetter: { fontSize: 22, fontFamily: "Inter_700Bold" },
   hero: {
     flex: 1,
     paddingHorizontal: spacing.pagePadding,
+    alignItems: "center",
     justifyContent: "center",
     gap: 20,
   },
-  heroImage: { width: "100%", height: 220 },
+  imageWrap: { alignItems: "center" },
+  imgCircle: {
+    width: CIRCLE,
+    height: CIRCLE,
+    borderRadius: CIRCLE / 2,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 8,
+    overflow: "hidden",
+  },
+  heroEmoji: { fontSize: 80 },
+  floatEmoji1: {
+    position: "absolute", top: 20, right: 24, fontSize: 28,
+  },
+  floatEmoji2: {
+    position: "absolute", bottom: 24, left: 20, fontSize: 28,
+  },
+  floatEmoji3: {
+    position: "absolute", top: 28, left: 28, fontSize: 22,
+  },
   headline: {
-    fontSize: 44,
+    fontSize: 40,
     fontFamily: "Inter_700Bold",
     letterSpacing: -2,
-    lineHeight: 50,
+    lineHeight: 46,
+    textAlign: "center",
   },
   body: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Inter_400Regular",
-    lineHeight: 24,
-    maxWidth: 320,
+    lineHeight: 22,
+    textAlign: "center",
+    maxWidth: 300,
   },
   actions: {
     paddingHorizontal: spacing.pagePadding,

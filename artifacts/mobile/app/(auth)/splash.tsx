@@ -34,12 +34,11 @@ export default function SplashScreen() {
   useEffect(() => {
     logoOpacity.value = withTiming(1, { duration: 500 });
     logoScale.value = withSpring(1, { damping: 14, stiffness: 120 });
-
     textOpacity.value = withDelay(400, withTiming(1, { duration: 500 }));
     dotScale.value = withDelay(600, withSpring(1, { damping: 12 }));
 
     const timer = setTimeout(() => {
-      router.replace("/(auth)/onboarding");
+      router.replace("/(auth)/welcome");
     }, 2400);
     return () => clearTimeout(timer);
   }, []);
@@ -51,11 +50,7 @@ export default function SplashScreen() {
           <Text style={[styles.logoLetter, { color: colors.primaryForeground }]}>B</Text>
         </View>
         <Animated.View
-          style={[
-            styles.dot,
-            { backgroundColor: colors.accentOrange },
-            dotAnimStyle,
-          ]}
+          style={[styles.dot, { backgroundColor: colors.accentOrange }, dotAnimStyle]}
         />
       </Animated.View>
 
@@ -70,46 +65,18 @@ export default function SplashScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 24,
-  },
-  logoWrap: {
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  container: { flex: 1, alignItems: "center", justifyContent: "center", gap: 24 },
+  logoWrap: { position: "relative", alignItems: "center", justifyContent: "center" },
   logoBadge: {
-    width: 88,
-    height: 88,
-    borderRadius: 28,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 88, height: 88, borderRadius: 28,
+    alignItems: "center", justifyContent: "center",
   },
-  logoLetter: {
-    fontSize: 52,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -2,
-  },
+  logoLetter: { fontSize: 52, fontFamily: "Inter_700Bold", letterSpacing: -2 },
   dot: {
-    position: "absolute",
-    bottom: -4,
-    right: -4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    position: "absolute", bottom: -4, right: -4,
+    width: 20, height: 20, borderRadius: 10,
   },
   textWrap: { alignItems: "center", gap: 6 },
-  brand: {
-    fontSize: 40,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -2,
-  },
-  tagline: {
-    fontSize: 15,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 0.2,
-  },
+  brand: { fontSize: 40, fontFamily: "Inter_700Bold", letterSpacing: -2 },
+  tagline: { fontSize: 15, fontFamily: "Inter_400Regular", letterSpacing: 0.2 },
 });

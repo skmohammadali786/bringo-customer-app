@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import React from "react";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -79,7 +80,8 @@ export default function AgentProfileScreen() {
             </View>
             <Text style={[styles.actionLabel, { color: colors.primary }]}>Message</Text>
           </Pressable>
-          <Pressable style={[styles.actionBtn, { backgroundColor: colors.card }, shadows.sm]}>
+          <Pressable style={[styles.actionBtn, { backgroundColor: colors.card }, shadows.sm]}
+            onPress={() => Linking.openURL("tel:+911234567890")}>
             <View style={[styles.actionIcon, { backgroundColor: colors.accentBlue + "18" }]}>
               <Feather name="phone" size={22} color={colors.accentBlue} />
             </View>

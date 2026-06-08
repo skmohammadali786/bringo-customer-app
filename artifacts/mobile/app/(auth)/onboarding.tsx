@@ -76,7 +76,7 @@ export default function OnboardingScreen() {
     });
     if (isLast) {
       await markOnboardingSeen();
-      router.replace("/(auth)/welcome");
+      router.replace("/(auth)/login");
     } else {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1, animated: true });
     }
@@ -84,7 +84,7 @@ export default function OnboardingScreen() {
 
   const handleSkip = async () => {
     await markOnboardingSeen();
-    router.replace("/(auth)/welcome");
+    router.replace("/(auth)/login");
   };
 
   const renderItem: ListRenderItem<Slide> = ({ item }) => (
@@ -143,8 +143,7 @@ export default function OnboardingScreen() {
               style={[
                 styles.dot,
                 {
-                  backgroundColor:
-                    i === currentIndex ? colors.primary : colors.muted,
+                  backgroundColor: i === currentIndex ? colors.primary : colors.muted,
                   width: i === currentIndex ? 24 : 8,
                 },
               ]}
@@ -177,11 +176,8 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   logoBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    width: 36, height: 36, borderRadius: 12,
+    alignItems: "center", justifyContent: "center",
   },
   logoLetter: { fontSize: 20, fontFamily: "Inter_700Bold" },
   skip: { fontSize: 15, fontFamily: "Inter_500Medium" },
@@ -202,38 +198,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  illustration: {
-    width: IMG_SIZE,
-    height: IMG_SIZE,
-  },
+  illustration: { width: IMG_SIZE, height: IMG_SIZE },
   textWrap: { alignItems: "center", gap: 14 },
   title: {
-    fontSize: 38,
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -1.5,
-    textAlign: "center",
-    lineHeight: 44,
+    fontSize: 38, fontFamily: "Inter_700Bold",
+    letterSpacing: -1.5, textAlign: "center", lineHeight: 44,
   },
   subtitle: {
-    fontSize: 16,
-    fontFamily: "Inter_400Regular",
-    textAlign: "center",
-    lineHeight: 24,
-    maxWidth: 300,
+    fontSize: 16, fontFamily: "Inter_400Regular",
+    textAlign: "center", lineHeight: 24, maxWidth: 300,
   },
-  bottom: {
-    paddingHorizontal: spacing.pagePadding,
-    gap: 24,
-    alignItems: "center",
-  },
+  bottom: { paddingHorizontal: spacing.pagePadding, gap: 24, alignItems: "center" },
   dots: { flexDirection: "row", gap: 6, alignItems: "center" },
   dot: { height: 8, borderRadius: 4 },
   btnWrap: { width: "100%" },
   nextBtn: {
-    height: 60,
-    borderRadius: 999,
-    alignItems: "center",
-    justifyContent: "center",
+    height: 60, borderRadius: 999,
+    alignItems: "center", justifyContent: "center",
   },
   nextText: { fontSize: 17, fontFamily: "Inter_600SemiBold", letterSpacing: -0.2 },
 });

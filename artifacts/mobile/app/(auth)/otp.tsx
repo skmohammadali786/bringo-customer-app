@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 import { shadows, spacing } from "@/constants/spacing";
 import { typography } from "@/constants/typography";
@@ -23,7 +22,6 @@ export default function OTPScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { phone } = useLocalSearchParams<{ phone: string }>();
-  const { login } = useAuth();
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [verifying, setVerifying] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
@@ -67,8 +65,7 @@ export default function OTPScreen() {
     if (!isComplete) return;
     setVerifying(true);
     await new Promise((r) => setTimeout(r, 1200));
-    await login(phone || "");
-    router.replace("/(auth)/permissions");
+    router.replace({ pathname: "/(auth)/register", params: { phone: phone || "" } });
   };
 
   const maskedPhone = phone ? `+91 ${phone.slice(0, 5)} ${phone.slice(5)}` : "";
@@ -161,13 +158,9 @@ const styles = StyleSheet.create({
   sub: { ...typography.body, lineHeight: 24 },
   otpRow: { flexDirection: "row", gap: 10, justifyContent: "space-between" },
   otpBox: {
-    flex: 1,
-    height: 60,
-    borderRadius: 16,
-    textAlign: "center",
-    fontSize: 24,
-    fontFamily: "Inter_700Bold",
-    borderWidth: 1.5,
+    flex: 1, height: 60, borderRadius: 16,
+    textAlign: "center", fontSize: 24,
+    fontFamily: "Inter_700Bold", borderWidth: 1.5,
   },
   resendRow: { alignItems: "center" },
   resendText: { ...typography.bodyMedium },
