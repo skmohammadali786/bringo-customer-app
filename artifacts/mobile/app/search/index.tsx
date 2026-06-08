@@ -246,7 +246,12 @@ export default function SearchScreen() {
             <Animated.View entering={FadeInDown.duration(300)}>
               <Pressable
                 style={[styles.filterBar, { borderBottomColor: colors.border }]}
-                onPress={() => router.push("/search/filters" as any)}
+                onPress={() =>
+                  router.push({
+                    pathname: "/search/filters" as any,
+                    params: { q: query },
+                  })
+                }
               >
                 <Feather name="sliders" size={14} color={colors.accentOrange} />
                 <Text style={[styles.filterText, { color: colors.accentOrange }]}>
