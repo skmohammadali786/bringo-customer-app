@@ -215,13 +215,12 @@ export default function ProfileScreen() {
                 styles.statItem,
                 { backgroundColor: colors.card },
                 shadows.sm,
-                i === 1 && { backgroundColor: "#111111" },
               ]}
             >
               <Text
                 style={[
                   styles.statVal,
-                  { color: i === 1 ? "#F7F5F0" : colors.primary },
+                  { color: colors.primary },
                 ]}
               >
                 {s.value}
@@ -229,7 +228,7 @@ export default function ProfileScreen() {
               <Text
                 style={[
                   styles.statLbl,
-                  { color: i === 1 ? "rgba(247,245,240,0.6)" : colors.mutedForeground },
+                  { color: colors.mutedForeground },
                 ]}
               >
                 {s.label}

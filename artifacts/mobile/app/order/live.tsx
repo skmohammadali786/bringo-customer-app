@@ -32,32 +32,37 @@ export default function LiveOrderScreen() {
   const pulseStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.value }] }));
 
   return (
-    <View style={[{ flex: 1, backgroundColor: colors.primary }]}>
+    <View style={[{ flex: 1, backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad + 16 }]}>
-        <Pressable onPress={() => router.back()} style={[styles.headerBtn, { backgroundColor: "rgba(255,255,255,0.15)" }]}>
-          <Feather name="arrow-left" size={20} color="#FFF" />
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.headerBtn, { backgroundColor: colors.card }, shadows.sm]}
+        >
+          <Feather name="arrow-left" size={20} color={colors.primary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Live order</Text>
-        <Pressable style={[styles.headerBtn, { backgroundColor: "rgba(255,255,255,0.15)" }]}
-          onPress={() => router.push("/order/issue" as any)}>
-          <Feather name="alert-circle" size={20} color="#FFF" />
+        <Text style={[styles.headerTitle, { color: colors.primary }]}>Live order</Text>
+        <Pressable
+          style={[styles.headerBtn, { backgroundColor: colors.card }, shadows.sm]}
+          onPress={() => router.push("/order/issue" as any)}
+        >
+          <Feather name="alert-circle" size={20} color={colors.primary} />
         </Pressable>
       </View>
 
       {/* ETA */}
       <View style={styles.etaSection}>
-        <Animated.View style={[styles.etaRing, { borderColor: "rgba(255,154,61,0.3)" }, pulseStyle]}>
+        <Animated.View style={[styles.etaRing, { borderColor: colors.accentOrange + "30" }, pulseStyle]}>
           <View style={[styles.etaInner, { backgroundColor: colors.accentOrange }]}>
             <Text style={styles.etaNum}>{eta}</Text>
             <Text style={styles.etaUnit}>min</Text>
           </View>
         </Animated.View>
-        <Text style={[styles.etaLabel, { color: "rgba(247,245,240,0.9)" }]}>Arriving at your door</Text>
+        <Text style={[styles.etaLabel, { color: colors.primary }]}>Arriving at your door</Text>
       </View>
 
       {/* Bottom sheet */}
-      <View style={[styles.sheet, { backgroundColor: colors.background }]}>
+      <View style={[styles.sheet, { backgroundColor: colors.card }, shadows.sm]}>
         {/* Progress steps */}
         <View style={styles.stepsWrap}>
           {STEPS.map((s, i) => {
@@ -124,10 +129,16 @@ export default function LiveOrderScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: spacing.pagePadding, paddingBottom: 20 },
-  headerTitle: { fontFamily: "Inter_700Bold", fontSize: 18, color: "#FFF" },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: spacing.pagePadding,
+    paddingBottom: 20,
+  },
+  headerTitle: { fontFamily: "Inter_700Bold", fontSize: 18 },
   headerBtn: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-  etaSection: { alignItems: "center", paddingVertical: 20, gap: 12 },
+  etaSection: { alignItems: "center", paddingVertical: 24, gap: 12 },
   etaRing: { width: 140, height: 140, borderRadius: 70, borderWidth: 3, alignItems: "center", justifyContent: "center" },
   etaInner: { width: 110, height: 110, borderRadius: 55, alignItems: "center", justifyContent: "center" },
   etaNum: { fontFamily: "Inter_700Bold", fontSize: 44, color: "#FFF", letterSpacing: -2, lineHeight: 48 },
