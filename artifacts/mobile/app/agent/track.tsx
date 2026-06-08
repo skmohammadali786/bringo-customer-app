@@ -7,6 +7,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { shadows, spacing } from "@/constants/spacing";
 
+// 0 = block (blue), 1 = road (white), 2 = park (green)
+const MAP_ROWS = [
+  [0, 0, 1, 0, 0, 0, 1, 0],
+  [0, 0, 1, 0, 0, 0, 1, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [0, 0, 1, 0, 2, 0, 1, 0],
+  [0, 0, 1, 0, 0, 0, 1, 0],
+  [1, 1, 1, 1, 1, 1, 1, 1],
+  [0, 0, 0, 1, 0, 0, 0, 1],
+  [0, 0, 0, 1, 0, 0, 0, 1],
+];
+
 const STEPS = ["Order received", "Agent assigned", "Items sourced", "Out for delivery", "Delivered"];
 
 export default function AgentTrackScreen() {
@@ -31,43 +43,64 @@ export default function AgentTrackScreen() {
 
   return (
     <View style={[{ flex: 1, backgroundColor: colors.background }]}>
-      {/* Header */}
+      {/* Header — floats over the map */}
       <View style={[styles.header, { paddingTop: topPad + 16 }]}>
-        <Pressable onPress={() => router.back()}
-          style={[styles.backBtn, { backgroundColor: colors.card }, shadows.sm]}>
-          <Feather name="arrow-left" size={20} color={colors.primary} />
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.headerBtn, { backgroundColor: "#FFFFFF" }, shadows.sm]}
+        >
+          <Feather name="arrow-left" size={20} color="#111111" />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.primary }]}>Live tracking</Text>
-        <Pressable style={[styles.backBtn, { backgroundColor: colors.card }, shadows.sm]}>
-          <Feather name="more-vertical" size={20} color={colors.primary} />
+        <Pressable style={[styles.headerBtn, { backgroundColor: "#FFFFFF" }, shadows.sm]}>
+          <Feather name="more-vertical" size={20} color="#111111" />
         </Pressable>
       </View>
 
-      {/* Map Simulation */}
-      <View style={[styles.mapArea, { backgroundColor: colors.muted }]}>
-        <View style={styles.mapGrid}>
-          {Array.from({ length: 30 }).map((_, i) => (
-            <View key={i} style={[styles.mapCell, { backgroundColor: colors.card, opacity: 0.6 }]} />
+      {/* Map — always light, like a real map */}
+      <View style={styles.mapArea}>
+        {/* Light map background */}
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: "#E8EFF7" }]} />
+
+        {/* Road grid */}
+        <View style={styles.grid}>
+          {MAP_ROWS.map((row, ri) => (
+            <View key={ri} style={styles.gridRow}>
+              {row.map((cell, ci) => {
+                if (cell === 1) return <View key={ci} style={[styles.road]} />;
+                if (cell === 2) return <View key={ci} style={[styles.park]} />;
+                return <View key={ci} style={[styles.block]} />;
+              })}
+            </View>
           ))}
         </View>
-        {/* Agent */}
-        <Animated.View style={[styles.agentMarker, { opacity: dotAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }) }]}>
-          <View style={[styles.markerBubble, { backgroundColor: colors.accentOrange }]}>
+
+        {/* Agent marker */}
+        <Animated.View
+          style={[
+            styles.agentMarker,
+            { opacity: dotAnim.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) },
+          ]}
+        >
+          <View style={[styles.markerBubble, { backgroundColor: colors.accentOrange }, shadows.lg]}>
             <Feather name="navigation" size={18} color="#FFF" />
           </View>
           <View style={[styles.markerStem, { backgroundColor: colors.accentOrange }]} />
-          <Text style={[styles.markerLabel, { color: colors.primary }]}>Rahul</Text>
+          <View style={[styles.markerLabel, shadows.sm]}>
+            <Text style={styles.markerLabelText}>Rahul</Text>
+          </View>
         </Animated.View>
-        {/* Destination */}
-        <View style={[styles.destMarker, { right: "20%", bottom: "25%" }]}>
-          <View style={[styles.markerBubble, { backgroundColor: colors.accentGreen }]}>
+
+        {/* Destination marker */}
+        <View style={[styles.destMarker, { right: "18%", bottom: "22%" }]}>
+          <View style={[styles.markerBubble, { backgroundColor: colors.accentGreen }, shadows.md]}>
             <Feather name="home" size={16} color="#FFF" />
           </View>
         </View>
-        {/* ETA chip */}
-        <View style={[styles.etaChip, { backgroundColor: colors.primary }, shadows.lg]}>
-          <Text style={[styles.etaNum, { color: colors.primaryForeground }]}>{eta}</Text>
-          <Text style={[styles.etaUnit, { color: "rgba(247,245,240,0.7)" }]}>min</Text>
+
+        {/* ETA chip — always white on map */}
+        <View style={[styles.etaChip, { backgroundColor: "#FFFFFF" }, shadows.lg]}>
+          <Text style={styles.etaNum}>{eta}</Text>
+          <Text style={styles.etaUnit}>min</Text>
         </View>
       </View>
 
@@ -86,8 +119,15 @@ export default function AgentTrackScreen() {
             </View>
           </View>
           <View style={styles.agentActions}>
-            <Pressable style={[styles.actionBtn, { backgroundColor: colors.accentGreen + "18" }]}
-              onPress={() => router.push({ pathname: "/chat/[id]" as any, params: { id: "agent-001", name: "Rahul K.", subtitle: "Online · Your delivery agent" } })}>
+            <Pressable
+              style={[styles.actionBtn, { backgroundColor: colors.accentGreen + "18" }]}
+              onPress={() =>
+                router.push({
+                  pathname: "/chat/[id]" as any,
+                  params: { id: "agent-001", name: "Rahul K.", subtitle: "Online · Your delivery agent" },
+                })
+              }
+            >
               <Feather name="message-circle" size={18} color={colors.accentGreen} />
             </Pressable>
             <Pressable
@@ -99,7 +139,7 @@ export default function AgentTrackScreen() {
           </View>
         </View>
 
-        {/* Progress */}
+        {/* Progress steps */}
         <View style={styles.progressWrap}>
           {STEPS.map((step, i) => {
             const done = i <= currentStep;
@@ -107,20 +147,39 @@ export default function AgentTrackScreen() {
             return (
               <View key={step} style={styles.stepRow}>
                 <View style={styles.stepLeft}>
-                  <View style={[styles.stepDot, {
-                    backgroundColor: done ? (active ? colors.accentOrange : colors.primary) : colors.muted,
-                    width: active ? 20 : 14,
-                    height: active ? 20 : 14,
-                    borderRadius: active ? 10 : 7,
-                  }]} />
+                  <View
+                    style={[
+                      styles.stepDot,
+                      {
+                        backgroundColor: done
+                          ? active
+                            ? colors.accentOrange
+                            : colors.primary
+                          : colors.muted,
+                        width: active ? 20 : 14,
+                        height: active ? 20 : 14,
+                        borderRadius: active ? 10 : 7,
+                      },
+                    ]}
+                  />
                   {i < STEPS.length - 1 && (
-                    <View style={[styles.stepLine, { backgroundColor: i < currentStep ? colors.primary : colors.muted }]} />
+                    <View
+                      style={[
+                        styles.stepLine,
+                        { backgroundColor: i < currentStep ? colors.primary : colors.muted },
+                      ]}
+                    />
                   )}
                 </View>
-                <Text style={[styles.stepLabel, {
-                  color: active ? colors.accentOrange : done ? colors.primary : colors.mutedForeground,
-                  fontFamily: active ? "Inter_600SemiBold" : "Inter_400Regular",
-                }]}>
+                <Text
+                  style={[
+                    styles.stepLabel,
+                    {
+                      color: active ? colors.accentOrange : done ? colors.primary : colors.mutedForeground,
+                      fontFamily: active ? "Inter_600SemiBold" : "Inter_400Regular",
+                    },
+                  ]}
+                >
                   {step}
                 </Text>
               </View>
@@ -129,8 +188,10 @@ export default function AgentTrackScreen() {
         </View>
 
         <View style={{ paddingHorizontal: spacing.pagePadding, paddingBottom: botPad }}>
-          <Pressable style={[styles.issueBtn, { backgroundColor: colors.muted }]}
-            onPress={() => router.push("/order/issue" as any)}>
+          <Pressable
+            style={[styles.issueBtn, { backgroundColor: colors.muted }]}
+            onPress={() => router.push("/order/issue" as any)}
+          >
             <Text style={[styles.issueBtnText, { color: colors.secondary }]}>Report an issue</Text>
           </Pressable>
         </View>
@@ -152,21 +213,50 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
   },
-  headerTitle: { fontFamily: "Inter_600SemiBold", fontSize: 17 },
-  backBtn: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center" },
-  mapArea: { height: "55%", position: "relative" },
-  mapGrid: { position: "absolute", inset: 0, flexDirection: "row", flexWrap: "wrap", padding: 10, gap: 2 },
-  mapCell: { width: "18%", height: 40, borderRadius: 6 },
-  agentMarker: { position: "absolute", left: "40%", top: "40%", alignItems: "center" },
+  headerBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mapArea: { height: "52%", position: "relative", overflow: "hidden" },
+  grid: { position: "absolute", inset: 0 },
+  gridRow: { flex: 1, flexDirection: "row" },
+  road: { flex: 1 },
+  block: { flex: 1, margin: 2, borderRadius: 4, backgroundColor: "#D6E4F0" },
+  park: { flex: 1, margin: 2, borderRadius: 4, backgroundColor: "#C8E6C9" },
+  agentMarker: { position: "absolute", left: "38%", top: "38%", alignItems: "center" },
   markerBubble: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
-  markerStem: { width: 3, height: 12 },
-  markerLabel: { fontFamily: "Inter_600SemiBold", fontSize: 12, backgroundColor: "#F7F5F0", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2 },
+  markerStem: { width: 3, height: 10 },
+  markerLabel: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 2,
+  },
+  markerLabelText: { fontFamily: "Inter_600SemiBold", fontSize: 12, color: "#111111" },
   destMarker: { position: "absolute", alignItems: "center" },
-  etaChip: { position: "absolute", top: 80, right: 20, borderRadius: 16, padding: 12, alignItems: "center" },
-  etaNum: { fontFamily: "Inter_700Bold", fontSize: 28, letterSpacing: -1 },
-  etaUnit: { fontFamily: "Inter_400Regular", fontSize: 12 },
+  etaChip: {
+    position: "absolute",
+    top: 80,
+    right: 20,
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  etaNum: { fontFamily: "Inter_700Bold", fontSize: 28, color: "#111111", letterSpacing: -1 },
+  etaUnit: { fontFamily: "Inter_400Regular", fontSize: 12, color: "#5B5B5B" },
   sheet: { flex: 1, borderTopLeftRadius: 28, borderTopRightRadius: 28, marginTop: -20 },
-  agentRow: { flexDirection: "row", alignItems: "center", padding: 20, gap: 12, borderBottomWidth: 1 },
+  agentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    gap: 12,
+    borderBottomWidth: 1,
+  },
   agentAvatar: { width: 52, height: 52, borderRadius: 18, alignItems: "center", justifyContent: "center" },
   agentInitial: { fontFamily: "Inter_700Bold", fontSize: 24 },
   agentInfo: { flex: 1, gap: 4 },
