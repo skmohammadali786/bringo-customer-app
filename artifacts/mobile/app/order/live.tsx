@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
@@ -111,10 +112,13 @@ export default function LiveOrderScreen() {
             </View>
           </View>
           <Pressable style={[styles.agentBtn, { backgroundColor: colors.accentGreen + "18" }]}
-            onPress={() => router.push("/support/chat" as any)}>
+            onPress={() => router.push({ pathname: "/chat/[id]" as any, params: { id: "live-order", name: "Rahul K.", subtitle: "Online · Your delivery agent" } })}>
             <Feather name="message-circle" size={18} color={colors.accentGreen} />
           </Pressable>
-          <Pressable style={[styles.agentBtn, { backgroundColor: colors.accentBlue + "18" }]}>
+          <Pressable
+            style={[styles.agentBtn, { backgroundColor: colors.accentBlue + "18" }]}
+            onPress={() => Linking.openURL("tel:+911234567890")}
+          >
             <Feather name="phone" size={18} color={colors.accentBlue} />
           </Pressable>
         </View>

@@ -74,7 +74,7 @@ export default function AgentProfileScreen() {
         {/* Actions */}
         <View style={styles.actionsRow}>
           <Pressable style={[styles.actionBtn, { backgroundColor: colors.card }, shadows.sm]}
-            onPress={() => router.push("/chat/support" as any)}>
+            onPress={() => router.push({ pathname: "/chat/[id]" as any, params: { id: "agent-001", name: "Rahul K.", subtitle: "Online · Your agent" } })}>
             <View style={[styles.actionIcon, { backgroundColor: colors.accentGreen + "18" }]}>
               <Feather name="message-circle" size={22} color={colors.accentGreen} />
             </View>

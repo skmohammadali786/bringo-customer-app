@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -155,7 +156,10 @@ export default function OrderDetailScreen() {
               >
                 <Feather name="message-circle" size={18} color={colors.accentGreen} />
               </Pressable>
-              <Pressable style={[styles.agentBtn, { backgroundColor: colors.accentBlue + "18" }]}>
+              <Pressable
+                style={[styles.agentBtn, { backgroundColor: colors.accentBlue + "18" }]}
+                onPress={() => Linking.openURL("tel:+911234567890")}
+              >
                 <Feather name="phone" size={18} color={colors.accentBlue} />
               </Pressable>
             </View>

@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -28,7 +29,9 @@ const INITIAL_MESSAGES: Message[] = [
 export default function ChatScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, name, subtitle } = useLocalSearchParams<{ id: string; name?: string; subtitle?: string }>();
+  const agentName = name ?? "Rahul K.";
+  const agentSubtitle = subtitle ?? "Online · Your agent";
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [text, setText] = useState("");
   const topPad = Platform.OS === "web" ? 67 : insets.top;
@@ -69,14 +72,17 @@ export default function ChatScreen() {
         <View style={styles.agentInfo}>
           <View style={[styles.agentDot, { backgroundColor: colors.accentGreen }]} />
           <View style={[styles.agentAvatar, { backgroundColor: colors.primary }]}>
-            <Text style={[styles.agentInitial, { color: colors.primaryForeground }]}>R</Text>
+            <Text style={[styles.agentInitial, { color: colors.primaryForeground }]}>{agentName.charAt(0)}</Text>
           </View>
           <View>
-            <Text style={[styles.agentName, { color: colors.primary }]}>Rahul K.</Text>
-            <Text style={[styles.agentStatus, { color: colors.accentGreen }]}>Online · Your agent</Text>
+            <Text style={[styles.agentName, { color: colors.primary }]}>{agentName}</Text>
+            <Text style={[styles.agentStatus, { color: colors.accentGreen }]}>{agentSubtitle}</Text>
           </View>
         </View>
-        <Pressable style={[styles.callBtn, { backgroundColor: colors.muted }]}>
+        <Pressable
+          style={[styles.callBtn, { backgroundColor: colors.muted }]}
+          onPress={() => Linking.openURL("tel:+911234567890")}
+        >
           <Feather name="phone" size={18} color={colors.primary} />
         </Pressable>
       </View>
