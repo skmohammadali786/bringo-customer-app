@@ -39,10 +39,10 @@ export default function WalletScreen() {
 
       {/* Balance Card */}
       <Animated.View entering={FadeInDown.duration(400).delay(80)} style={styles.balanceWrap}>
-        <View style={[styles.balanceCard, { backgroundColor: colors.primary }, shadows.lg]}>
+        <View style={[styles.balanceCard, { backgroundColor: "#111111" }, shadows.lg]}>
           <View style={styles.balanceTop}>
             <View style={[styles.walletIcon, { backgroundColor: "rgba(247,245,240,0.15)" }]}>
-              <Feather name="credit-card" size={22} color={colors.primaryForeground} />
+              <Feather name="credit-card" size={22} color="#F7F5F0" />
             </View>
             <View style={[styles.cashbackBadge, { backgroundColor: colors.accentOrange }]}>
               <Text style={styles.cashbackText}>Earn cashback</Text>
@@ -51,7 +51,7 @@ export default function WalletScreen() {
           <Text style={[styles.balanceLabel, { color: "rgba(247,245,240,0.6)" }]}>
             Available Balance
           </Text>
-          <Text style={[styles.balance, { color: colors.primaryForeground }]}>
+          <Text style={[styles.balance, { color: "#F7F5F0" }]}>
             ₹{user?.walletBalance?.toLocaleString("en-IN") ?? "0"}
           </Text>
           <View style={styles.balanceActions}>
@@ -66,8 +66,8 @@ export default function WalletScreen() {
               style={[styles.walletBtn, { backgroundColor: "rgba(247,245,240,0.15)" }]}
               onPress={() => router.push("/wallet/transfer" as any)}
             >
-              <Feather name="arrow-up-right" size={16} color={colors.primaryForeground} />
-              <Text style={[styles.walletBtnText, { color: colors.primaryForeground }]}>
+              <Feather name="arrow-up-right" size={16} color="#F7F5F0" />
+              <Text style={[styles.walletBtnText, { color: "#F7F5F0" }]}>
                 Transfer
               </Text>
             </Pressable>

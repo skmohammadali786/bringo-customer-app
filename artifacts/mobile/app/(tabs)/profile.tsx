@@ -110,7 +110,6 @@ export default function ProfileScreen() {
           icon: "award",
           label: "Rewards Dashboard",
           subtitle: "450 pts",
-          color: colors.accentOrange,
           route: "/profile/rewards",
         },
         {
@@ -216,13 +215,13 @@ export default function ProfileScreen() {
                 styles.statItem,
                 { backgroundColor: colors.card },
                 shadows.sm,
-                i === 1 && { backgroundColor: colors.primary },
+                i === 1 && { backgroundColor: "#111111" },
               ]}
             >
               <Text
                 style={[
                   styles.statVal,
-                  { color: i === 1 ? colors.primaryForeground : colors.primary },
+                  { color: i === 1 ? "#F7F5F0" : colors.primary },
                 ]}
               >
                 {s.value}

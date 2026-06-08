@@ -27,7 +27,8 @@ description: Key decisions for the Bringo Expo mobile app (hyperlocal on-demand 
 ## ThemeContext (context/ThemeContext.tsx)
 - Stores preference: "light" | "dark" | "system", persisted to AsyncStorage at `@bringo_theme`
 - Also stores accentColor at `@bringo_accent`, default "#FF9A3D". Both loaded via Promise.all.
-- **Defaults to "light"** (not system). ThemeProvider renders immediately with defaults — do NOT return null while loading (causes splash screen to stay visible).
+- **White flash fix:** Before `loaded` is true, `resolved` uses `systemScheme` directly — prevents dark-mode users seeing a white flash while AsyncStorage reads. After loaded, uses stored preference.
+- **Do NOT return null while loading** — causes splash screen to stay visible. Always render children.
 - useColors() overlays accentColor onto accentOrange/tint/accent keys.
 - **Why:** App must default to light. Returning null blocks SplashScreen.hideAsync chain.
 

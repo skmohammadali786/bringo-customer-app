@@ -52,12 +52,15 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const resolved: "light" | "dark" =
-    preference === "system"
+  const resolved: "light" | "dark" = loaded
+    ? preference === "system"
       ? systemScheme === "dark"
         ? "dark"
         : "light"
-      : preference;
+      : preference
+    : systemScheme === "dark"
+    ? "dark"
+    : "light";
 
   const setPreference = useCallback(async (pref: ThemePreference) => {
     setPreferenceState(pref);

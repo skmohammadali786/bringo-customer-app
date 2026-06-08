@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { Image, Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -41,6 +41,15 @@ export default function OrderSuccessScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
+        <Pressable
+          onPress={() => router.back()}
+          style={[styles.backBtn, { backgroundColor: colors.card }]}
+          hitSlop={8}
+        >
+          <Feather name="arrow-left" size={20} color={colors.primary} />
+        </Pressable>
+      </View>
       <View style={styles.hero}>
         <Animated.View style={[checkStyle]}>
           <View style={[styles.successRing, { borderColor: `${colors.accentGreen}30` }]}>
@@ -97,6 +106,8 @@ export default function OrderSuccessScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "space-between" },
+  topBar: { paddingHorizontal: spacing.pagePadding, paddingBottom: 8 },
+  backBtn: { width: 40, height: 40, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   hero: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: spacing.pagePadding, gap: 32 },
   successRing: { width: 140, height: 140, borderRadius: 70, borderWidth: 12, alignItems: "center", justifyContent: "center" },
   successCircle: { width: 96, height: 96, borderRadius: 48, alignItems: "center", justifyContent: "center" },
